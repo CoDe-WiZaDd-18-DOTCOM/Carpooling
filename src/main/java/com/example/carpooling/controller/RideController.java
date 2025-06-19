@@ -39,6 +39,7 @@ public class RideController {
     }
 
     @GetMapping("/me")
+    @PreAuthorize("hasRole('DRIVER')")
     public ResponseEntity<List<Ride>> getMyRides(){
         try {
             String email = authUtil.getEmail();
@@ -50,7 +51,6 @@ public class RideController {
     }
 
     @GetMapping("/ride/{id}")
-    @PreAuthorize("hasRole('DRIVER')")
     public ResponseEntity<Ride> getRide(@PathVariable ObjectId id){
         try {
             Ride ride = rideService.getRide(id);

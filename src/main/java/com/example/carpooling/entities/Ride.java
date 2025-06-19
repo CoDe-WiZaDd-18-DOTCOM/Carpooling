@@ -23,8 +23,8 @@ public class Ride {
     @DBRef
     private User driver;
 
-    private RouteStop pickup;
-    private RouteStop drop;
+//    private RouteStop pickup;
+//    private RouteStop drop;
     private List<RouteStop> route;
 
     private int seatCapacity;
@@ -49,21 +49,21 @@ public class Ride {
     }
 
 
-    public RouteStop getPickup() {
-        return pickup;
-    }
-
-    public void setPickup(RouteStop pickup) {
-        this.pickup = pickup;
-    }
-
-    public RouteStop getDrop() {
-        return drop;
-    }
-
-    public void setDrop(RouteStop drop) {
-        this.drop = drop;
-    }
+//    public RouteStop getPickup() {
+//        return pickup;
+//    }
+//
+//    public void setPickup(RouteStop pickup) {
+//        this.pickup = pickup;
+//    }
+//
+//    public RouteStop getDrop() {
+//        return drop;
+//    }
+//
+//    public void setDrop(RouteStop drop) {
+//        this.drop = drop;
+//    }
 
     public List<RouteStop> getRoute() {
         return route;

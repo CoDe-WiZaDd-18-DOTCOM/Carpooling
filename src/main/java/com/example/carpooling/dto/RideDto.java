@@ -7,8 +7,8 @@ import com.example.carpooling.entities.Vehicle;
 import java.util.List;
 
 public class RideDto {
-    private RouteStop pickup;
-    private RouteStop drop;
+//    private RouteStop pickup;
+//    private RouteStop drop;
     private List<RouteStop> route;
 
     private int seatCapacity;
@@ -17,21 +17,21 @@ public class RideDto {
     private Vehicle vehicle;
     private Preferences preferences;
 
-    public RouteStop getPickup() {
-        return pickup;
-    }
-
-    public void setPickup(RouteStop pickup) {
-        this.pickup = pickup;
-    }
-
-    public RouteStop getDrop() {
-        return drop;
-    }
-
-    public void setDrop(RouteStop drop) {
-        this.drop = drop;
-    }
+//    public RouteStop getPickup() {
+//        return pickup;
+//    }
+//
+//    public void setPickup(RouteStop pickup) {
+//        this.pickup = pickup;
+//    }
+//
+//    public RouteStop getDrop() {
+//        return drop;
+//    }
+//
+//    public void setDrop(RouteStop drop) {
+//        this.drop = drop;
+//    }
 
     public List<RouteStop> getRoute() {
         return route;

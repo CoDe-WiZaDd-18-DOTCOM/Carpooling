@@ -33,8 +33,6 @@ public class RideService {
     public Ride addRide(RideDto rideDto,User user){
         Ride ride = new Ride();
         ride.setDriver(user);
-        ride.setPickup(rideDto.getPickup());
-        ride.setDrop(rideDto.getDrop());
         ride.setRoute(rideDto.getRoute());
         ride.setSeatCapacity(rideDto.getSeatCapacity());
         ride.setAvailableSeats(rideDto.getAvailableSeats());
