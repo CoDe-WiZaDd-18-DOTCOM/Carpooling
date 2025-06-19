@@ -28,8 +28,6 @@ public class User {
 
     private Preferences preferences;
 
-    private List<ObjectId> currentBookingRequestIds;
-    private List<ObjectId> completedBookingRequestIds;
 
     public ObjectId getId() {
         return id;
@@ -95,20 +93,5 @@ public class User {
         this.preferences = preferences;
     }
 
-    public List<ObjectId> getCurrentBookingRequestIds() {
-        return currentBookingRequestIds;
-    }
-
-    public void setCurrentBookingRequestIds(List<ObjectId> currentBookingRequestIds) {
-        this.currentBookingRequestIds = currentBookingRequestIds;
-    }
-
-    public List<ObjectId> getCompletedBookingRequestIds() {
-        return completedBookingRequestIds;
-    }
-
-    public void setCompletedBookingRequestIds(List<ObjectId> completedBookingRequestIds) {
-        this.completedBookingRequestIds = completedBookingRequestIds;
-    }
 }
 

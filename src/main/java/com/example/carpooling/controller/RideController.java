@@ -1,6 +1,8 @@
 package com.example.carpooling.controller;
 
 import com.example.carpooling.dto.RideDto;
+import com.example.carpooling.dto.SearchRequest;
+import com.example.carpooling.dto.SearchResponse;
 import com.example.carpooling.entities.Ride;
 import com.example.carpooling.entities.User;
 import com.example.carpooling.services.RideService;
@@ -55,6 +57,16 @@ public class RideController {
         try {
             Ride ride = rideService.getRide(id);
             return new ResponseEntity<>(ride,HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/search")
+    public ResponseEntity<List<SearchResponse>> getPrefferedRides(@RequestBody SearchRequest searchRequest){
+        try{
+            User user = userService.getUser(authUtil.getEmail());
+            return new ResponseEntity<>(rideService.getPrefferedRides(user,searchRequest),HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
