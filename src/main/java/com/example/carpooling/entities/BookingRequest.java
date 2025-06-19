@@ -1,13 +1,11 @@
 package com.example.carpooling.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.util.List;
 
 @Document(collection = "booking_requests")
 //@Data
@@ -28,7 +26,31 @@ public class BookingRequest {
     @DBRef
     private User driver;
 
+    private Location pickup;
+
+    private Location destination;
+
+    private List<Location> preferredRoute;
+
     private boolean isApproved;
+
+
+
+    public Location getPickup() {
+        return pickup;
+    }
+
+    public void setPickup(Location pickup) {
+        this.pickup = pickup;
+    }
+
+    public Location getDestination() {
+        return destination;
+    }
+
+    public void setDestination(Location destination) {
+        this.destination = destination;
+    }
 
     public ObjectId getId() {
         return id;
@@ -36,6 +58,14 @@ public class BookingRequest {
 
     public void setId(ObjectId id) {
         this.id = id;
+    }
+
+    public List<Location> getPreferredRoute() {
+        return preferredRoute;
+    }
+
+    public void setPreferredRoute(List<Location> preferredRoute) {
+        this.preferredRoute = preferredRoute;
     }
 
     public Ride getRide() {

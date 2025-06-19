@@ -1,12 +1,9 @@
 package com.example.carpooling.entities;
 
-import com.mongodb.lang.NonNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.example.carpooling.enums.Role;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
@@ -20,7 +17,10 @@ public class User {
 
     private String firstName;
     private String lastName;
+
+    @Indexed(unique = true)
     private String email;
+
     private String phoneNumber;
     private String password;
 

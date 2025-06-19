@@ -41,7 +41,7 @@ public class AuthController {
         user.setPhoneNumber(signUpRequest.getPhoneNumber());
         user.setPreferences(signUpRequest.getPreferences());
 
-        userService.saveUser(user);
+        userService.addUser(user);
         AuthResponse authResponse = new AuthResponse();
         authResponse.setEmail(user.getEmail());
         authResponse.setJwtToken(jwtUtil.generateToken(user.getEmail()));

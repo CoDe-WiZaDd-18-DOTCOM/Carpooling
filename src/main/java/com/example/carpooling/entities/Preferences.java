@@ -1,42 +1,46 @@
 package com.example.carpooling.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-//
-//@Data
-//@NoArgsConstructor
-//@AllArgsConstructor
-//@Builder
+import com.example.carpooling.enums.PreferenceOption;
+import com.example.carpooling.enums.GenderPreference;
+
 public class Preferences {
-    private boolean music;
-    private boolean smoking;
-    private boolean petFriendly;
+
+    private PreferenceOption music;
+    private PreferenceOption smoking;
+    private PreferenceOption petFriendly;
+    private PreferenceOption ac;
     private GenderPreference genderBased;
 
-    public boolean isMusic() {
+    public PreferenceOption getMusic() {
         return music;
     }
 
-    public void setMusic(boolean music) {
+    public void setMusic(PreferenceOption music) {
         this.music = music;
     }
 
-    public boolean isSmoking() {
+    public PreferenceOption getSmoking() {
         return smoking;
     }
 
-    public void setSmoking(boolean smoking) {
+    public void setSmoking(PreferenceOption smoking) {
         this.smoking = smoking;
     }
 
-    public boolean isPetFriendly() {
+    public PreferenceOption getPetFriendly() {
         return petFriendly;
     }
 
-    public void setPetFriendly(boolean petFriendly) {
+    public void setPetFriendly(PreferenceOption petFriendly) {
         this.petFriendly = petFriendly;
+    }
+
+    public PreferenceOption getAc() {
+        return ac;
+    }
+
+    public void setAc(PreferenceOption ac) {
+        this.ac = ac;
     }
 
     public GenderPreference getGenderBased() {
@@ -47,4 +51,3 @@ public class Preferences {
         this.genderBased = genderBased;
     }
 }
-

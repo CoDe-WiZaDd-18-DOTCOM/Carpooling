@@ -1,11 +1,7 @@
 package com.example.carpooling.dto;
 
 import com.example.carpooling.entities.Preferences;
-import com.example.carpooling.entities.Role;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.example.carpooling.enums.Role;
 
 //@Data
 //@NoArgsConstructor

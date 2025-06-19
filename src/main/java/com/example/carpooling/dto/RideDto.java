@@ -1,28 +1,12 @@
-package com.example.carpooling.entities;
+package com.example.carpooling.dto;
 
-import com.example.carpooling.enums.RideStatus;
-import org.bson.types.ObjectId;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.DBRef;
-import org.springframework.data.mongodb.core.mapping.Document;
+import com.example.carpooling.entities.Preferences;
+import com.example.carpooling.entities.RouteStop;
+import com.example.carpooling.entities.Vehicle;
 
 import java.util.List;
 
-@Document(collection = "rides")
-//@Data
-//@NoArgsConstructor
-//@AllArgsConstructor
-//@Builder
-public class Ride {
-
-    @Id
-    private ObjectId id;
-
-    @Indexed
-    @DBRef
-    private User driver;
-
+public class RideDto {
     private RouteStop pickup;
     private RouteStop drop;
     private List<RouteStop> route;
@@ -32,22 +16,6 @@ public class Ride {
 
     private Vehicle vehicle;
     private Preferences preferences;
-
-    private RideStatus status; // OPEN, FILLED, CLOSED
-
-
-
-
-
-
-    public ObjectId getId() {
-        return id;
-    }
-
-    public void setId(ObjectId id) {
-        this.id = id;
-    }
-
 
     public RouteStop getPickup() {
         return pickup;
@@ -71,14 +39,6 @@ public class Ride {
 
     public void setRoute(List<RouteStop> route) {
         this.route = route;
-    }
-
-    public User getDriver() {
-        return driver;
-    }
-
-    public void setDriver(User driver) {
-        this.driver = driver;
     }
 
     public int getSeatCapacity() {
@@ -112,14 +72,4 @@ public class Ride {
     public void setPreferences(Preferences preferences) {
         this.preferences = preferences;
     }
-
-    public RideStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(RideStatus status) {
-        this.status = status;
-    }
-
 }
-
