@@ -1,5 +1,6 @@
 package com.example.carpooling.dto;
 
+import com.example.carpooling.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,6 +13,15 @@ import lombok.NoArgsConstructor;
 public class AuthResponse {
     private String jwtToken;
     private String email;
+    private String role;
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
 
     public String getJwtToken() {
         return jwtToken;

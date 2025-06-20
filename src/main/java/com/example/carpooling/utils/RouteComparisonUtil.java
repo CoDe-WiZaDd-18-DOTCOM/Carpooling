@@ -6,6 +6,7 @@ import com.example.carpooling.entities.Preferences;
 import com.example.carpooling.entities.RouteStop;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.List;
 
@@ -31,25 +32,32 @@ public class RouteComparisonUtil {
         preferredSet.add(dropPoint.getArea());
 
         preferredRoute.forEach(loc -> preferredSet.add(loc.getArea()));
+        LocalTime localTime = LocalTime.MIN;
 
         if (preferredRoute.isEmpty()) {
             for (RouteStop stop : driverRoute) {
                 String area = stop.getLocation().getArea();
-                if (area.equals(pickupPoint.getArea())) pickupFound = true;
+                if (area.equals(pickupPoint.getArea())) {
+                    pickupFound = true;
+                    localTime=stop.getArrivalTime();
+                }
                 else if (area.equals(dropPoint.getArea()) && pickupFound) dropFound = true;
 
                 if (pickupFound && dropFound) break;
             }
 
-            if (!pickupFound) return new RouteMatchResult(0, "Pickup point not found in driver's route");
-            if (!dropFound) return new RouteMatchResult(50, "Drop point not found in driver's route");
+            if (!pickupFound) return new RouteMatchResult(0, "Pickup point not found in driver's route",localTime);
+            if (!dropFound) return new RouteMatchResult(50, "Drop point not found in driver's route",localTime);
 
         } else {
             double totalCount = 0, matchedCount = 0;
 
             for (RouteStop stop : driverRoute) {
                 String area = stop.getLocation().getArea();
-                if (area.equals(pickupPoint.getArea())) pickupFound = true;
+                if (area.equals(pickupPoint.getArea())) {
+                    pickupFound = true;
+                    localTime=stop.getArrivalTime();
+                }
                 else if (area.equals(dropPoint.getArea()) && pickupFound) dropFound = true;
 
                 if (pickupFound) {
@@ -60,7 +68,7 @@ public class RouteComparisonUtil {
                 if (pickupFound && dropFound) break;
             }
 
-            if (!pickupFound) return new RouteMatchResult(0, "Pickup point not found in driver's route");
+            if (!pickupFound) return new RouteMatchResult(0, "Pickup point not found in driver's route",localTime);
             if (!dropFound) score += DESTINATION_NOT_FOUND_PENALTY;
 
             score *= (matchedCount / totalCount);
@@ -68,9 +76,9 @@ public class RouteComparisonUtil {
 
         score += calculatePreferencePenalty(current, preferred);
 
-        if (score <= 0) return new RouteMatchResult(0, "Route and preferences mismatch");
+        if (score <= 0) return new RouteMatchResult(0, "Route and preferences mismatch",localTime);
 
-        return new RouteMatchResult(score, "Route match successful");
+        return new RouteMatchResult(score, "Route match successful",localTime);
     }
 
     private int calculatePreferencePenalty(Preferences current, Preferences preferred) {

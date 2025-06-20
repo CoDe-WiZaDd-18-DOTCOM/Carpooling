@@ -5,9 +5,11 @@ import com.example.carpooling.dto.RideDto;
 import com.example.carpooling.dto.RouteMatchResult;
 import com.example.carpooling.dto.SearchRequest;
 import com.example.carpooling.dto.SearchResponse;
+import com.example.carpooling.entities.BookingRequest;
 import com.example.carpooling.entities.Ride;
 import com.example.carpooling.enums.RideStatus;
 import com.example.carpooling.entities.User;
+import com.example.carpooling.repositories.BookingRequestRepository;
 import com.example.carpooling.repositories.RideRepository;
 import com.example.carpooling.utils.RouteComparisonUtil;
 import org.bson.types.ObjectId;
@@ -25,6 +27,9 @@ public class RideService {
 
     @Autowired
     private RouteComparisonUtil routeComparisonUtil;
+
+    @Autowired
+    private BookingRequestRepository bookingRequestRepository;
 
     public List<Ride> getAllRides(){
         return rideRepository.findAll();
@@ -45,7 +50,15 @@ public class RideService {
             RouteMatchResult routeMatchResult = routeComparisonUtil.compareRoute(ride.getRoute(),
                                                                             searchRequest.getPrefferedRoute(),
                     searchRequest.getPickup(), searchRequest.getDrop(), ride.getPreferences(), user.getPreferences());
-            if(routeMatchResult.getScore()!=0) searchResponses.add(new SearchResponse(ride,routeMatchResult));
+            if(routeMatchResult.getScore()!=0) {
+                BookingRequest bookingRequest = checkAndGetRequest(ride, user);
+                String status="NULL";
+                if(bookingRequest!=null) {
+                    if(bookingRequest.isApproved()) status="APPROVED";
+                    else status="PENDING";
+                }
+                searchResponses.add(new SearchResponse(ride,routeMatchResult, status));
+            }
         }
         searchResponses.sort((a, b) -> Double.compare(b.getRouteMatchResult().getScore(), a.getRouteMatchResult().getScore()));
         return searchResponses;
@@ -63,5 +76,12 @@ public class RideService {
 
         rideRepository.save(ride);
         return ride;
+    }
+
+    public BookingRequest checkAndGetRequest(Ride ride, User rider){
+        if(bookingRequestRepository.existsByRideAndRider(ride,rider)){
+            return bookingRequestRepository.findByRideAndRider(ride,rider);
+        }
+        return null;
     }
 }

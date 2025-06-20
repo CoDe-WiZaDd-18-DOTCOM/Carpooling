@@ -1,5 +1,7 @@
 package com.example.carpooling.dto;
 
+import java.time.LocalTime;
+
 //import lombok.AllArgsConstructor;
 //import lombok.Data;
 //
@@ -8,10 +10,12 @@ package com.example.carpooling.dto;
 public class RouteMatchResult {
     private double score;
     private String reason;
+    private LocalTime arraivalTime;
 
-    public RouteMatchResult(double score,String reason){
+    public RouteMatchResult(double score,String reason,LocalTime arraivalTime){
         this.score=score;
         this.reason=reason;
+        this.arraivalTime=arraivalTime;
     }
 
     public double getScore() {

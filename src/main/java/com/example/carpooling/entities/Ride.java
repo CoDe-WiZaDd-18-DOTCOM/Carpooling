@@ -33,7 +33,7 @@ public class Ride {
     private Vehicle vehicle;
     private Preferences preferences;
 
-    private RideStatus status; // OPEN, FILLED, CLOSED
+    private RideStatus status;
 
 
 

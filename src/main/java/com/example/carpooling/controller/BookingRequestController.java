@@ -1,5 +1,6 @@
 package com.example.carpooling.controller;
 
+import com.example.carpooling.dto.BookingWrapper;
 import com.example.carpooling.dto.SearchRequest;
 import com.example.carpooling.entities.BookingRequest;
 import com.example.carpooling.entities.Ride;
@@ -12,6 +13,7 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,8 +33,22 @@ public class BookingRequestController {
     @Autowired
     private RideService rideService;
 
+    @GetMapping("/booking/{id}")
+    public ResponseEntity<BookingRequest> getBookingById(@PathVariable ObjectId id) {
+        try {
+            BookingRequest bookingRequest = bookingRequestService.getBooking(id);
+            if (bookingRequest == null) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<>(bookingRequest, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
     @GetMapping("/me")
-    public ResponseEntity<List<BookingRequest>> getRiderBookings(){
+    public ResponseEntity<List<BookingWrapper>> getRiderBookings(){
         try {
             User rider = userService.getUser(authUtil.getEmail());
             return new ResponseEntity<>(bookingRequestService.getUserRides(rider), HttpStatus.OK);
@@ -41,8 +57,9 @@ public class BookingRequestController {
         }
     }
 
+    @PreAuthorize("hasRole('DRIVER')")
     @GetMapping("/incoming")
-    public ResponseEntity<List<BookingRequest>> getIncomingRequestsForDriver(){
+    public ResponseEntity<List<BookingWrapper>> getIncomingRequestsForDriver(){
         try {
             User rider = userService.getUser(authUtil.getEmail());
             return new ResponseEntity<>(bookingRequestService.getIncomingRequestsForDriver(rider), HttpStatus.OK);
@@ -65,6 +82,7 @@ public class BookingRequestController {
         }
     }
 
+    @PreAuthorize("hasRole('DRIVER')")
     @PostMapping("/{id}/approve")
     public ResponseEntity<BookingRequest> approveRequest(@PathVariable ObjectId id){
         try {

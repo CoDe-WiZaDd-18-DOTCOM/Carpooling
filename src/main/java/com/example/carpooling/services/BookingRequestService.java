@@ -1,5 +1,6 @@
 package com.example.carpooling.services;
 
+import com.example.carpooling.dto.BookingWrapper;
 import com.example.carpooling.dto.SearchRequest;
 import com.example.carpooling.entities.BookingRequest;
 import com.example.carpooling.entities.Ride;
@@ -10,6 +11,7 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -24,12 +26,20 @@ public class BookingRequestService {
         return bookingRequestRepository.findById(id).orElse(null);
     }
 
-    public List<BookingRequest> getIncomingRequestsForDriver(User driver){
-        return bookingRequestRepository.findAllByDriver(driver);
+    public List<BookingWrapper> getIncomingRequestsForDriver(User driver){
+        List<BookingRequest> bookingRequests=bookingRequestRepository.findAllByDriver(driver);
+        List<BookingWrapper> bookingWrappers = new ArrayList<>();
+
+        for(BookingRequest bookingRequest:bookingRequests) bookingWrappers.add(new BookingWrapper(bookingRequest));
+        return bookingWrappers;
     }
 
-    public List<BookingRequest> getUserRides(User rider){
-        return bookingRequestRepository.findAllByRider(rider);
+    public List<BookingWrapper> getUserRides(User rider){
+        List<BookingRequest> bookingRequests=bookingRequestRepository.findAllByRider(rider);
+        List<BookingWrapper> bookingWrappers = new ArrayList<>();
+
+        for(BookingRequest bookingRequest:bookingRequests) bookingWrappers.add(new BookingWrapper(bookingRequest));
+        return bookingWrappers;
     }
 
     public BookingRequest addRequest(SearchRequest searchRequest,Ride ride, User rider){

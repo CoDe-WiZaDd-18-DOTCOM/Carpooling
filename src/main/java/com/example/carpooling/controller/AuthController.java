@@ -8,6 +8,7 @@ import com.example.carpooling.services.UserService;
 import com.example.carpooling.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,7 +31,7 @@ public class AuthController {
     @PostMapping("/sign-up")
     public ResponseEntity<AuthResponse> signup(@RequestBody SignUpRequest signUpRequest){
         String email=signUpRequest.getEmail();
-        if(userService.isUserExists(email)) return new ResponseEntity<>(HttpStatus.CONFLICT);
+        if(userService.isUserExists(email)) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
         User user = new User();
         user.setFirstName(signUpRequest.getFirstName());
@@ -45,6 +46,7 @@ public class AuthController {
         AuthResponse authResponse = new AuthResponse();
         authResponse.setEmail(user.getEmail());
         authResponse.setJwtToken(jwtUtil.generateToken(user.getEmail()));
+        authResponse.setRole(user.getRole().name());
         return new ResponseEntity<>(authResponse,HttpStatus.OK);
     }
 
@@ -62,6 +64,7 @@ public class AuthController {
         AuthResponse authResponse = new AuthResponse();
         authResponse.setEmail(user.getEmail());
         authResponse.setJwtToken(jwtUtil.generateToken(user.getEmail()));
+        authResponse.setRole(user.getRole().name());
         return new ResponseEntity<>(authResponse,HttpStatus.OK);
     }
 }

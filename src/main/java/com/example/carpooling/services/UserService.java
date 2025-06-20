@@ -1,6 +1,7 @@
 package com.example.carpooling.services;
 
 import com.example.carpooling.dto.UpdateProfileRequest;
+import com.example.carpooling.dto.UserProfileDto;
 import com.example.carpooling.entities.User;
 import com.example.carpooling.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,17 +25,34 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public User updateUser(String email, UpdateProfileRequest request) {
+    public UserProfileDto getUserProfile(String email) {
         User user = userRepository.findByEmail(email);
-        if (user == null) return null;
-
-        if (request.getFirstName() != null) user.setFirstName(request.getFirstName());
-        if (request.getLastName() != null) user.setLastName(request.getLastName());
-        if (request.getPhoneNumber() != null) user.setPhoneNumber(request.getPhoneNumber());
-        if (request.getPreferences() != null) user.setPreferences(request.getPreferences());
-
-        return userRepository.save(user);
+        return mapToDto(user);
     }
+
+    public UserProfileDto updateUserProfile(String email, UserProfileDto dto) {
+        User user = userRepository.findByEmail(email);
+
+        if (dto.getFirstName() != null) user.setFirstName(dto.getFirstName());
+        if (dto.getLastName() != null) user.setLastName(dto.getLastName());
+        if (dto.getPhoneNumber() != null) user.setPhoneNumber(dto.getPhoneNumber());
+        if (dto.getPreferences() != null) user.setPreferences(dto.getPreferences());
+
+        userRepository.save(user);
+        return mapToDto(user);
+    }
+
+    private UserProfileDto mapToDto(User user) {
+        UserProfileDto dto = new UserProfileDto();
+        dto.setFirstName(user.getFirstName());
+        dto.setLastName(user.getLastName());
+        dto.setEmail(user.getEmail());
+        dto.setPhoneNumber(user.getPhoneNumber());
+        dto.setRole(user.getRole());
+        dto.setPreferences(user.getPreferences());
+        return dto;
+    }
+
 
 
 }
