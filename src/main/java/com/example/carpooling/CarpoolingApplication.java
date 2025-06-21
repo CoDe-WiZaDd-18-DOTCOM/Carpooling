@@ -11,6 +11,8 @@ public class CarpoolingApplication {
 		Dotenv dotenv = Dotenv.configure().load();
 		System.setProperty("MONGO_URI", dotenv.get("MONGO_URI"));
 		System.setProperty("SECRET_KEY", dotenv.get("SECRET_KEY"));
+		System.setProperty("EMAIL",dotenv.get("EMAIL"));
+		System.setProperty("PASSWORD",dotenv.get("PASSWORD"));
 		SpringApplication.run(CarpoolingApplication.class, args);
 	}
 
