@@ -41,6 +41,7 @@ public class AuthController {
         user.setRole(signUpRequest.getRole());
         user.setPhoneNumber(signUpRequest.getPhoneNumber());
         user.setPreferences(signUpRequest.getPreferences());
+        user.setEmergencyEmail(signUpRequest.getEmergencyEmail());
 
         userService.addUser(user);
         AuthResponse authResponse = new AuthResponse();

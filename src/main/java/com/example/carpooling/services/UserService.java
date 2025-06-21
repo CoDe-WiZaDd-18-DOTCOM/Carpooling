@@ -37,6 +37,7 @@ public class UserService {
         if (dto.getLastName() != null) user.setLastName(dto.getLastName());
         if (dto.getPhoneNumber() != null) user.setPhoneNumber(dto.getPhoneNumber());
         if (dto.getPreferences() != null) user.setPreferences(dto.getPreferences());
+        if (dto.getEmergencyEmail() != null) user.setEmergencyEmail(dto.getEmergencyEmail());
 
         userRepository.save(user);
         return mapToDto(user);
@@ -50,6 +51,8 @@ public class UserService {
         dto.setPhoneNumber(user.getPhoneNumber());
         dto.setRole(user.getRole());
         dto.setPreferences(user.getPreferences());
+        dto.setEmergencyEmail(user.getEmergencyEmail());
+        dto.setProfileImageBase64(user.getProfileImageBase64());
         return dto;
     }
 

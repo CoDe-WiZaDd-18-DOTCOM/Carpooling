@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/sos")
+@RequestMapping
 public class SosController {
 
     @Autowired
@@ -34,7 +34,7 @@ public class SosController {
     @Autowired
     private SosAuthoritiesService sosAuthoritiesService;
 
-    @PostMapping("/alert/{id}")
+    @PostMapping("/sos/alert/{id}")
     public ResponseEntity<String> sendSos(@PathVariable String id, @RequestBody String message) {
         try {
             ObjectId newid = new ObjectId(id);
@@ -93,7 +93,7 @@ public class SosController {
         }
     }
 
-    @PostMapping("/authority")
+    @PostMapping("/sos/authority")
     public ResponseEntity<SosAuthorities> postAuthority(@RequestBody SosAuthorityMapper sosAuthorityMapper){
         try{
             SosAuthorities sosAuthorities=sosAuthoritiesService.addAuthority(sosAuthorityMapper);
@@ -102,5 +102,37 @@ public class SosController {
             return new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
         }
     }
+
+    @GetMapping("/sos/alerts")
+    public ResponseEntity<List<SosAlerts>> getAlerts(){
+        try{
+            return new ResponseEntity<>(sosAlertsService.getAlerts(),HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/share-location/{id}")
+    public ResponseEntity<String> shareLocation(@PathVariable ObjectId id, @RequestBody String location) {
+        try {
+            User user = userService.getUser(authUtil.getEmail());
+            BookingRequest bookingRequest = bookingRequestService.getBooking(id);
+
+
+            String to = user.getEmergencyEmail();
+
+            String subject = "📍 Live Location Shared from CarpoolConnect";
+            String body = "User " + user.getFirstName() + " " + user.getLastName() +
+                    " has shared their current location during a ride.\n\nLocation: " + location +
+                    "\n\nin the following ride" + bookingRequest.getPickup().getArea() +
+                    " -------> " + bookingRequest.getDestination().getArea();
+
+            emailService.sendEmergencyEmail(to, subject, body);
+            return ResponseEntity.ok("Location shared successfully!");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Failed to share location: " + e.getMessage());
+        }
+    }
+
 }
 

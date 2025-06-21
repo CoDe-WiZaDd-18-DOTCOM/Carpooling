@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Base64;
 
 @RestController
 @RequestMapping("/users")
@@ -28,6 +31,24 @@ public class UserController {
         String email = authUtil.getEmail();
         return new ResponseEntity<>(userService.updateUserProfile(email, profileDto), HttpStatus.OK);
     }
+
+    @PostMapping("/upload-picture")
+    public ResponseEntity<String> uploadProfilePicture(@RequestParam("file") MultipartFile file) {
+        try {
+            User user = userService.getUser(authUtil.getEmail());
+
+            byte[] bytes = file.getBytes();
+            String base64Image = Base64.getEncoder().encodeToString(bytes);
+
+            user.setProfileImageBase64(base64Image);
+            userService.addUser(user);
+
+            return ResponseEntity.ok("Profile picture uploaded successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Upload failed: " + e.getMessage());
+        }
+    }
+
 }
 
 

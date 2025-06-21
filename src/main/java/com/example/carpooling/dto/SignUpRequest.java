@@ -13,10 +13,30 @@ public class SignUpRequest {
     private String email;
     private String phoneNumber;
     private String password;
+    private String emergencyEmail;
 
     private Role role;
 
     private Preferences preferences;
+    private String profileImageBase64;
+
+    public String getProfileImageBase64() {
+        return profileImageBase64;
+    }
+
+    public void setProfileImageBase64(String profileImageBase64) {
+        this.profileImageBase64 = profileImageBase64;
+    }
+
+
+
+    public String getEmergencyEmail() {
+        return emergencyEmail;
+    }
+
+    public void setEmergencyEmail(String emergencyEmail) {
+        this.emergencyEmail = emergencyEmail;
+    }
 
     public String getFirstName() {
         return firstName;
