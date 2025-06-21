@@ -1,10 +1,7 @@
 package com.example.carpooling.services;
 
 
-import com.example.carpooling.dto.RideDto;
-import com.example.carpooling.dto.RouteMatchResult;
-import com.example.carpooling.dto.SearchRequest;
-import com.example.carpooling.dto.SearchResponse;
+import com.example.carpooling.dto.*;
 import com.example.carpooling.entities.BookingRequest;
 import com.example.carpooling.entities.Ride;
 import com.example.carpooling.enums.RideStatus;
@@ -35,8 +32,11 @@ public class RideService {
         return rideRepository.findAll();
     }
 
-    public List<Ride> getAllRidesOfDriver(User driver){
-        return rideRepository.findAllByDriver(driver);
+    public List<RideWrapper> getAllRidesOfDriver(User driver){
+        List<Ride> rides=rideRepository.findAllByDriver(driver);
+        List<RideWrapper> rideWrappers = new ArrayList<>();
+        for(Ride ride:rides) rideWrappers.add(new RideWrapper(ride));
+        return rideWrappers;
     }
 
     public Ride getRide(ObjectId id){

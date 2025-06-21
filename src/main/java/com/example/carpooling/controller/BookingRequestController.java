@@ -1,6 +1,7 @@
 package com.example.carpooling.controller;
 
 import com.example.carpooling.dto.BookingWrapper;
+import com.example.carpooling.dto.RideWrapper;
 import com.example.carpooling.dto.SearchRequest;
 import com.example.carpooling.entities.BookingRequest;
 import com.example.carpooling.entities.Ride;
@@ -41,6 +42,16 @@ public class BookingRequestController {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
             return new ResponseEntity<>(bookingRequest, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/booking/by-ride/{id}")
+    public ResponseEntity<List<BookingWrapper>> getBookingByRide(@PathVariable ObjectId id){
+        try {
+            List<BookingWrapper> bookingWrapper = bookingRequestService.getBookingByRide(rideService.getRide(id));
+            return new ResponseEntity<>(bookingWrapper, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }

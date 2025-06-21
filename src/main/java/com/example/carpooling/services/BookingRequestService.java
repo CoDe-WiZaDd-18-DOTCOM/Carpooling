@@ -1,6 +1,7 @@
 package com.example.carpooling.services;
 
 import com.example.carpooling.dto.BookingWrapper;
+import com.example.carpooling.dto.RideWrapper;
 import com.example.carpooling.dto.SearchRequest;
 import com.example.carpooling.entities.BookingRequest;
 import com.example.carpooling.entities.Ride;
@@ -67,6 +68,13 @@ public class BookingRequestService {
         bookingRequest.setApproved(true);
         bookingRequestRepository.save(bookingRequest);
         return bookingRequest;
+    }
+
+    public List<BookingWrapper> getBookingByRide(Ride ride){
+        List<BookingRequest> bookingRequests = bookingRequestRepository.findAllByRide(ride);
+        List<BookingWrapper> bookingWrappers = new ArrayList<>();
+        for(BookingRequest bookingRequest:bookingRequests) bookingWrappers.add(new BookingWrapper(bookingRequest));
+        return bookingWrappers;
     }
 
 }

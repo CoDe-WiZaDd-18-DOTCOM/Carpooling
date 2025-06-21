@@ -1,6 +1,7 @@
 package com.example.carpooling.controller;
 
 import com.example.carpooling.dto.RideDto;
+import com.example.carpooling.dto.RideWrapper;
 import com.example.carpooling.dto.SearchRequest;
 import com.example.carpooling.dto.SearchResponse;
 import com.example.carpooling.entities.Ride;
@@ -42,10 +43,10 @@ public class RideController {
 
     @GetMapping("/me")
     @PreAuthorize("hasRole('DRIVER')")
-    public ResponseEntity<List<Ride>> getMyRides(){
+    public ResponseEntity<List<RideWrapper>> getMyRides(){
         try {
             String email = authUtil.getEmail();
-            List<Ride> rides = rideService.getAllRidesOfDriver(userService.getUser(email));
+            List<RideWrapper> rides = rideService.getAllRidesOfDriver(userService.getUser(email));
             return new ResponseEntity<>(rides,HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

@@ -11,7 +11,10 @@ import java.util.List;
 public interface BookingRequestRepository extends MongoRepository<BookingRequest, ObjectId> {
     List<BookingRequest> findAllByRider(User rider);
     List<BookingRequest> findAllByDriver(User driver);
+    List<BookingRequest> findAllByRide(Ride ride);
 
     boolean existsByRideAndRider(Ride ride,User rider);
     BookingRequest findByRideAndRider(Ride ride,User rider);
+
+
 }

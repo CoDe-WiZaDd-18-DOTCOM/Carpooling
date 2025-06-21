@@ -10,12 +10,20 @@ import java.time.LocalTime;
 public class RouteMatchResult {
     private double score;
     private String reason;
-    private LocalTime arraivalTime;
+    private LocalTime arrivalTime;
 
     public RouteMatchResult(double score,String reason,LocalTime arraivalTime){
         this.score=score;
         this.reason=reason;
-        this.arraivalTime=arraivalTime;
+        this.arrivalTime =arraivalTime;
+    }
+
+    public LocalTime getArrivalTime() {
+        return arrivalTime;
+    }
+
+    public void setArrivalTime(LocalTime arrivalTime) {
+        this.arrivalTime = arrivalTime;
     }
 
     public double getScore() {
