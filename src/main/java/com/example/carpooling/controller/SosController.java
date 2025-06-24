@@ -106,7 +106,6 @@ public class SosController {
     @GetMapping("/sos/alerts")
     public ResponseEntity<List<SosAlerts>> getAlerts(){
         try{
-            System.out.println("hello");
             return new ResponseEntity<>(sosAlertsService.getAlerts(),HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

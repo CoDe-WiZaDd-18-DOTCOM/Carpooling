@@ -5,6 +5,7 @@ import com.example.carpooling.dto.UserProfileDto;
 import com.example.carpooling.entities.User;
 import com.example.carpooling.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -12,6 +13,9 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private RedisService redisService;
 
     public boolean isUserExists(String email){
         return userRepository.existsByEmail(email);
@@ -26,8 +30,15 @@ public class UserService {
     }
 
     public UserProfileDto getUserProfile(String email) {
+        String key = "user:"+email+":profile";
+
+        UserProfileDto cachedProfile = redisService.get(key,UserProfileDto.class);
+        if (cachedProfile != null) return cachedProfile;
+
         User user = userRepository.findByEmail(email);
-        return mapToDto(user);
+        UserProfileDto userProfileDto= mapToDto(user);
+        redisService.set(key,userProfileDto,300l);
+        return userProfileDto;
     }
 
     public UserProfileDto updateUserProfile(String email, UserProfileDto dto) {
