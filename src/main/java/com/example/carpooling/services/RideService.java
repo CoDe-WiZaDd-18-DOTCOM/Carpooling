@@ -26,6 +26,9 @@ public class RideService {
     private RouteComparisonUtil routeComparisonUtil;
 
     @Autowired
+    private RedisService redisService;
+
+    @Autowired
     private BookingRequestRepository bookingRequestRepository;
 
     public List<Ride> getAllRides(){
@@ -44,7 +47,13 @@ public class RideService {
     }
 
     public List<SearchResponse> getPrefferedRides(User user, SearchRequest searchRequest){
-        List<Ride> rides = rideRepository.findAllByStatus(RideStatus.OPEN);
+        List<Ride> rides = redisService.getList("rides",Ride.class);
+        if(rides==null){
+            rides = rideRepository.findAllByStatus(RideStatus.OPEN);
+            redisService.set("rides",rides,300l);
+            System.out.println("Cache miss on rides");
+        }
+
         List<SearchResponse> searchResponses = new ArrayList<>();
         for(Ride ride:rides){
             RouteMatchResult routeMatchResult = routeComparisonUtil.compareRoute(ride.getRoute(),
@@ -73,6 +82,8 @@ public class RideService {
         ride.setVehicle(rideDto.getVehicle());
         ride.setPreferences(rideDto.getPreferences());
         ride.setStatus(RideStatus.valueOf("OPEN"));
+
+        redisService.delete("rides");
 
         rideRepository.save(ride);
         return ride;

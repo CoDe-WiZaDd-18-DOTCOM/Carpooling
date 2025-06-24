@@ -15,13 +15,25 @@ public class SosAlertsService {
     @Autowired
     private SosAlertsRepository sosAlertsRepository;
 
-    public SosAlerts addAlert(User user,String message, BookingRequest bookingRequest){
-        SosAlerts sosAlerts = new SosAlerts(message, user, bookingRequest);
+    @Autowired
+    private RedisService redisService;
+
+    public SosAlerts addAlert(String message, BookingRequest bookingRequest){
+        SosAlerts sosAlerts = new SosAlerts(message, bookingRequest);
         sosAlertsRepository.save(sosAlerts);
+        redisService.delete("sosAlerts");
         return sosAlerts;
     }
 
     public List<SosAlerts> getAlerts(){
+        List<SosAlerts> sosAlerts = redisService.getList("sosAlerts",SosAlerts.class);
+        if(sosAlerts!=null){
+            System.out.println("cache hit on sosalerts");
+            return sosAlerts;
+        }
+
+        sosAlerts=sosAlertsRepository.findAll();
+        redisService.set("sosAlerts",sosAlerts,3*60*60l);
         return sosAlertsRepository.findAll();
     }
 }

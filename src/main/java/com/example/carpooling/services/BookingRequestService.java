@@ -6,6 +6,7 @@ import com.example.carpooling.dto.SearchRequest;
 import com.example.carpooling.entities.BookingRequest;
 import com.example.carpooling.entities.Ride;
 import com.example.carpooling.entities.User;
+import com.example.carpooling.enums.RideStatus;
 import com.example.carpooling.repositories.BookingRequestRepository;
 import com.example.carpooling.repositories.RideRepository;
 import org.bson.types.ObjectId;
@@ -22,6 +23,9 @@ public class BookingRequestService {
 
     @Autowired
     private RideRepository rideRepository;
+
+    @Autowired
+    private RedisService redisService;
 
     public BookingRequest getBooking(ObjectId id) {
         return bookingRequestRepository.findById(id).orElse(null);
@@ -60,7 +64,15 @@ public class BookingRequestService {
     public BookingRequest approveRequest(BookingRequest bookingRequest){
         Ride ride = bookingRequest.getRide();
 
-        if(ride.getAvailableSeats()==0) return null;
+        if(ride.getAvailableSeats()==0) {
+            ride.setStatus(RideStatus.CLOSED);
+            rideRepository.save(ride);
+            bookingRequest.setRide(ride);
+            bookingRequest.setApproved(false);
+            bookingRequestRepository.save(bookingRequest);
+            redisService.delete("rides");
+            return null;
+        }
 
         ride.setAvailableSeats(ride.getAvailableSeats()-1);
         rideRepository.save(ride);

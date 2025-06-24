@@ -8,9 +8,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class AuthUtil {
 
-    @Autowired
-    private RedisTemplate redisTemplate;
-
     public String getEmail(){
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }

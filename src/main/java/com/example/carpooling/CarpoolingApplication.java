@@ -15,6 +15,8 @@ public class CarpoolingApplication {
 		System.setProperty("SECRET_KEY", dotenv.get("SECRET_KEY"));
 		System.setProperty("EMAIL",dotenv.get("EMAIL"));
 		System.setProperty("PASSWORD",dotenv.get("PASSWORD"));
+		System.setProperty("REDIS_PASSWORD",dotenv.get("REDIS_PASSWORD"));
+
 		SpringApplication.run(CarpoolingApplication.class, args);
 	}
 

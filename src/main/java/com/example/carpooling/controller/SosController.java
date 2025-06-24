@@ -38,12 +38,12 @@ public class SosController {
     public ResponseEntity<String> sendSos(@PathVariable String id, @RequestBody String message) {
         try {
             ObjectId newid = new ObjectId(id);
-            User rider = userService.getUser(authUtil.getEmail());
             BookingRequest bookingRequest = bookingRequestService.getBooking(newid);
             Ride ride = bookingRequest.getRide();
             User driver = ride.getDriver();
+            User rider = bookingRequest.getRider();
 
-            sosAlertsService.addAlert(rider, message, bookingRequest);
+            sosAlertsService.addAlert(message, bookingRequest);
 
 
             String area = bookingRequest.getPickup().getArea();
@@ -108,6 +108,7 @@ public class SosController {
         try{
             return new ResponseEntity<>(sosAlertsService.getAlerts(),HttpStatus.OK);
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }

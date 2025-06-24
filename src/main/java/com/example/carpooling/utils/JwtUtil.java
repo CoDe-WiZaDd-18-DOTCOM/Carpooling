@@ -1,6 +1,8 @@
 package com.example.carpooling.utils;
 
 
+import com.example.carpooling.services.RedisService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.Claims;
@@ -17,12 +19,22 @@ public class JwtUtil {
     @Value("${SECRET_KEY}")
     private String SECRET_KEY;
 
+    @Autowired
+    private RedisService redisService;
+
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
     }
 
     public String extractUsername(String token) {
+        String email = redisService.get(token,String.class);
+        if(email!=null) {
+            System.out.println("cache hit for jwt");
+            return email;
+        }
+        System.out.println("cache miss for jwt");
         Claims claims = extractAllClaims(token);
+        redisService.set(token,claims.getSubject(),300l);
         return claims.getSubject();
     }
 

@@ -13,15 +13,12 @@ public class SosAlerts {
 
     private String message;
 
-    @DBRef
-    private User user;
 
     @DBRef
     private BookingRequest bookingRequest;
 
-    public SosAlerts(String message, User user, BookingRequest bookingRequest) {
+    public SosAlerts(String message, BookingRequest bookingRequest) {
         this.message = message;
-        this.user = user;
         this.bookingRequest = bookingRequest;
     }
 
@@ -41,13 +38,6 @@ public class SosAlerts {
         this.message = message;
     }
 
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
 
     public BookingRequest getBookingRequest() {
         return bookingRequest;
