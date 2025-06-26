@@ -7,9 +7,12 @@ import com.example.carpooling.entities.BookingRequest;
 import com.example.carpooling.entities.Ride;
 import com.example.carpooling.entities.User;
 import com.example.carpooling.services.BookingRequestService;
+import com.example.carpooling.services.RedisService;
 import com.example.carpooling.services.RideService;
 import com.example.carpooling.services.UserService;
 import com.example.carpooling.utils.AuthUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,7 +24,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/bookings")
+@Tag(name = "Bookings", description = "Endpoints for managing ride booking requests between riders and drivers.")
 public class BookingRequestController {
+
     @Autowired
     private BookingRequestService bookingRequestService;
 
@@ -34,6 +39,8 @@ public class BookingRequestController {
     @Autowired
     private RideService rideService;
 
+
+    @Operation(summary = "Get booking by ID", description = "Returns a single booking request given its unique ID.")
     @GetMapping("/booking/{id}")
     public ResponseEntity<BookingRequest> getBookingById(@PathVariable ObjectId id) {
         try {
@@ -47,8 +54,9 @@ public class BookingRequestController {
         }
     }
 
+    @Operation(summary = "Get bookings for a ride", description = "Returns all booking requests associated with a specific ride ID.")
     @GetMapping("/booking/by-ride/{id}")
-    public ResponseEntity<List<BookingWrapper>> getBookingByRide(@PathVariable ObjectId id){
+    public ResponseEntity<List<BookingWrapper>> getBookingByRide(@PathVariable ObjectId id) {
         try {
             List<BookingWrapper> bookingWrapper = bookingRequestService.getBookingByRide(rideService.getRide(id));
             return new ResponseEntity<>(bookingWrapper, HttpStatus.OK);
@@ -57,9 +65,9 @@ public class BookingRequestController {
         }
     }
 
-
+    @Operation(summary = "Get bookings by current user", description = "Returns all ride bookings made by the authenticated user (rider).")
     @GetMapping("/me")
-    public ResponseEntity<List<BookingWrapper>> getRiderBookings(){
+    public ResponseEntity<List<BookingWrapper>> getRiderBookings() {
         try {
             User rider = userService.getUser(authUtil.getEmail());
             return new ResponseEntity<>(bookingRequestService.getUserRides(rider), HttpStatus.OK);
@@ -68,9 +76,10 @@ public class BookingRequestController {
         }
     }
 
+    @Operation(summary = "Get incoming booking requests", description = "Returns all pending booking requests for rides owned by the current user (driver). Requires DRIVER role.")
     @PreAuthorize("hasRole('DRIVER')")
     @GetMapping("/incoming")
-    public ResponseEntity<List<BookingWrapper>> getIncomingRequestsForDriver(){
+    public ResponseEntity<List<BookingWrapper>> getIncomingRequestsForDriver() {
         try {
             User rider = userService.getUser(authUtil.getEmail());
             return new ResponseEntity<>(bookingRequestService.getIncomingRequestsForDriver(rider), HttpStatus.OK);
@@ -79,33 +88,35 @@ public class BookingRequestController {
         }
     }
 
+    @Operation(summary = "Create a booking request for a ride", description = "Creates a new booking request from the authenticated user (rider) for a given ride ID using provided search parameters.")
     @PostMapping("/{id}/create-request")
-    public ResponseEntity<BookingRequest> addRequest(@PathVariable ObjectId id,@RequestBody SearchRequest searchRequest){
+    public ResponseEntity<BookingRequest> addRequest(@PathVariable ObjectId id, @RequestBody SearchRequest searchRequest) {
         try {
             User rider = userService.getUser(authUtil.getEmail());
             Ride ride = rideService.getRide(id);
 
-            BookingRequest bookingRequest = bookingRequestService.addRequest(searchRequest,ride,rider);
-            return new ResponseEntity<>(bookingRequest,HttpStatus.OK);
+            BookingRequest bookingRequest = bookingRequestService.addRequest(searchRequest, ride, rider);
+            return new ResponseEntity<>(bookingRequest, HttpStatus.OK);
 
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
+    @Operation(summary = "Approve a booking request", description = "Allows a driver to approve a booking request by ID. Requires DRIVER role and the driver must own the ride.")
     @PreAuthorize("hasRole('DRIVER')")
     @PostMapping("/{id}/approve")
-    public ResponseEntity<BookingRequest> approveRequest(@PathVariable ObjectId id){
+    public ResponseEntity<BookingRequest> approveRequest(@PathVariable ObjectId id) {
         try {
             BookingRequest booking = bookingRequestService.getBooking(id);
             User user = userService.getUser(authUtil.getEmail());
 
-            if(!booking.getDriver().getId().equals(user.getId())) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            if (!booking.getDriver().getId().equals(user.getId())) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
             BookingRequest bookingRequest = bookingRequestService.approveRequest(booking);
-            if(bookingRequest==null) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            if (bookingRequest == null) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
-            return new ResponseEntity<>(bookingRequest,HttpStatus.OK);
+            return new ResponseEntity<>(bookingRequest, HttpStatus.OK);
 
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

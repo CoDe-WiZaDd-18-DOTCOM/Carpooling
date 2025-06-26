@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -39,13 +40,22 @@ public class BookingRequestService {
         return bookingWrappers;
     }
 
-    public List<BookingWrapper> getUserRides(User rider){
-        List<BookingRequest> bookingRequests=bookingRequestRepository.findAllByRider(rider);
-        List<BookingWrapper> bookingWrappers = new ArrayList<>();
+    public List<BookingWrapper> getUserRides(User rider) {
+        List<BookingRequest> bookingRequests = bookingRequestRepository.findAllByRider(rider);
 
-        for(BookingRequest bookingRequest:bookingRequests) bookingWrappers.add(new BookingWrapper(bookingRequest));
+        List<BookingRequest> sortedRequests = bookingRequests.stream()
+                .filter(br -> br.getRide() != null && br.getRide().getRoute() != null && !br.getRide().getRoute().isEmpty())
+                .sorted(Comparator.comparing(br -> br.getRide().getRoute().get(0).getArrivalTime()))
+                .toList();
+
+        List<BookingWrapper> bookingWrappers = new ArrayList<>();
+        for (BookingRequest request : sortedRequests) {
+            bookingWrappers.add(new BookingWrapper(request));
+        }
+
         return bookingWrappers;
     }
+
 
     public BookingRequest addRequest(SearchRequest searchRequest,Ride ride, User rider){
         BookingRequest bookingRequest = new BookingRequest();
@@ -65,7 +75,7 @@ public class BookingRequestService {
         Ride ride = bookingRequest.getRide();
 
         if(ride.getAvailableSeats()==0) {
-            ride.setStatus(RideStatus.CLOSED);
+            ride.setStatus(RideStatus.FILLED);
             rideRepository.save(ride);
             bookingRequest.setRide(ride);
             bookingRequest.setApproved(false);

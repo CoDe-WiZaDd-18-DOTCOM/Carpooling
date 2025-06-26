@@ -6,19 +6,19 @@ import com.example.carpooling.dto.SignUpRequest;
 import com.example.carpooling.entities.User;
 import com.example.carpooling.services.UserService;
 import com.example.carpooling.utils.JwtUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
+@Tag(name = "Authentication APIs", description = "Endpoints for user registration and login using JWT.")
 public class AuthController {
+
     @Autowired
     private UserService userService;
 
@@ -28,10 +28,14 @@ public class AuthController {
     @Autowired
     private JwtUtil jwtUtil;
 
+    @Operation(
+            summary = "Register a new user",
+            description = "Creates a new user with provided details, encodes the password, and returns a JWT token on success. Returns 403 if the user already exists."
+    )
     @PostMapping("/sign-up")
-    public ResponseEntity<AuthResponse> signup(@RequestBody SignUpRequest signUpRequest){
-        String email=signUpRequest.getEmail();
-        if(userService.isUserExists(email)) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+    public ResponseEntity<AuthResponse> signup(@RequestBody SignUpRequest signUpRequest) {
+        String email = signUpRequest.getEmail();
+        if (userService.isUserExists(email)) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
         User user = new User();
         user.setFirstName(signUpRequest.getFirstName());
@@ -44,18 +48,23 @@ public class AuthController {
         user.setEmergencyEmail(signUpRequest.getEmergencyEmail());
 
         userService.addUser(user);
+
         AuthResponse authResponse = new AuthResponse();
         authResponse.setEmail(user.getEmail());
         authResponse.setJwtToken(jwtUtil.generateToken(user.getEmail()));
         authResponse.setRole(user.getRole().name());
-        return new ResponseEntity<>(authResponse,HttpStatus.OK);
+
+        return new ResponseEntity<>(authResponse, HttpStatus.OK);
     }
 
-
+    @Operation(
+            summary = "Authenticate user and generate JWT",
+            description = "Validates user credentials and returns a JWT token if authentication is successful. Returns 404 if the user does not exist or 400 for incorrect password."
+    )
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest loginRequest){
-        String email=loginRequest.getEmail().trim().toLowerCase();
-        if(!userService.isUserExists(email)) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest loginRequest) {
+        String email = loginRequest.getEmail().trim().toLowerCase();
+        if (!userService.isUserExists(email)) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
         User user = userService.getUser(email);
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
@@ -66,6 +75,7 @@ public class AuthController {
         authResponse.setEmail(user.getEmail());
         authResponse.setJwtToken(jwtUtil.generateToken(user.getEmail()));
         authResponse.setRole(user.getRole().name());
-        return new ResponseEntity<>(authResponse,HttpStatus.OK);
+
+        return new ResponseEntity<>(authResponse, HttpStatus.OK);
     }
 }

@@ -5,6 +5,8 @@ import com.example.carpooling.dto.UserProfileDto;
 import com.example.carpooling.entities.User;
 import com.example.carpooling.services.UserService;
 import com.example.carpooling.utils.AuthUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,23 +17,36 @@ import java.util.Base64;
 
 @RestController
 @RequestMapping("/users")
+@Tag(name = "Users", description = "APIs related to user profile details, updates, and profile picture upload.")
 public class UserController {
 
     @Autowired private UserService userService;
     @Autowired private AuthUtil authUtil;
 
+    @Operation(
+            summary = "Get current user profile",
+            description = "Returns the profile information of the currently authenticated user."
+    )
     @GetMapping("/me")
     public ResponseEntity<UserProfileDto> getProfile() {
         String email = authUtil.getEmail();
         return new ResponseEntity<>(userService.getUserProfile(email), HttpStatus.OK);
     }
 
+    @Operation(
+            summary = "Update current user profile",
+            description = "Allows the authenticated user to update their profile information such as name, phone, preferences, etc."
+    )
     @PutMapping("/me")
     public ResponseEntity<UserProfileDto> updateProfile(@RequestBody UserProfileDto profileDto) {
         String email = authUtil.getEmail();
         return new ResponseEntity<>(userService.updateUserProfile(email, profileDto), HttpStatus.OK);
     }
 
+    @Operation(
+            summary = "Upload profile picture",
+            description = "Uploads and stores the profile picture of the current user as a Base64-encoded image."
+    )
     @PostMapping("/upload-picture")
     public ResponseEntity<String> uploadProfilePicture(@RequestParam("file") MultipartFile file) {
         try {
@@ -48,7 +63,4 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Upload failed: " + e.getMessage());
         }
     }
-
 }
-
-
