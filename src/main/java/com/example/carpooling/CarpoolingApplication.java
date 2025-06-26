@@ -16,6 +16,8 @@ public class CarpoolingApplication {
 		System.setProperty("EMAIL",dotenv.get("EMAIL"));
 		System.setProperty("PASSWORD",dotenv.get("PASSWORD"));
 		System.setProperty("REDIS_PASSWORD",dotenv.get("REDIS_PASSWORD"));
+		System.setProperty("GOOGLE_CLIENT_ID",dotenv.get("GOOGLE_CLIENT_ID"));
+		System.setProperty("GOOGLE_CLIENT_SECRET",dotenv.get("GOOGLE_CLIENT_SECRET"));
 
 		SpringApplication.run(CarpoolingApplication.class, args);
 	}
