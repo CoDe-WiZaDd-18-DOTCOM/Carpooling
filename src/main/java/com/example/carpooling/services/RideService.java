@@ -95,4 +95,13 @@ public class RideService {
         }
         return null;
     }
+
+    public Ride closeRide(ObjectId id){
+        Ride ride = rideRepository.findById(id).orElse(null);
+        if(ride!=null) {
+            ride.setStatus(RideStatus.CLOSED);
+            rideRepository.save(ride);
+        }
+        return ride;
+    }
 }

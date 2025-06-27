@@ -92,4 +92,16 @@ public class RideController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
+    @Operation(summary = "Close a ride", description = "Allows a driver to close a completed ride by providing id. Requires DRIVER role.")
+    @PostMapping("close-ride/{id}")
+    @PreAuthorize("hasRole('DRIVER')")
+    public ResponseEntity<Ride> closeRide(@PathVariable ObjectId id) {
+        try {
+            Ride ride = rideService.closeRide(id);
+            return new ResponseEntity<>(ride, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 }
