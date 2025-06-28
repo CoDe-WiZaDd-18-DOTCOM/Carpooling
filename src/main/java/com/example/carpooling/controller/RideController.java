@@ -54,6 +54,7 @@ public class RideController {
             List<RideWrapper> rides = rideService.getAllRidesOfDriver(userService.getUser(email));
             return new ResponseEntity<>(rides, HttpStatus.OK);
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
@@ -76,6 +77,7 @@ public class RideController {
             User user = userService.getUser(authUtil.getEmail());
             return new ResponseEntity<>(rideService.getPrefferedRides(user, searchRequest), HttpStatus.OK);
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }

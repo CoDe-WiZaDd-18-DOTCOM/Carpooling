@@ -2,6 +2,8 @@ package com.example.carpooling.dto;
 
 import com.example.carpooling.entities.*;
 
+import java.time.LocalDateTime;
+
 public class RideSearchDto {
     private String id;
     private User driver;
@@ -10,6 +12,7 @@ public class RideSearchDto {
     private Vehicle vehicle;
     private Preferences preferences;
     private int availableSeats;
+    private LocalDateTime createdAt;
 
     public RideSearchDto(Ride ride) {
         this.id = ride.getId().toHexString();
@@ -19,6 +22,15 @@ public class RideSearchDto {
         this.vehicle = ride.getVehicle();
         this.preferences = ride.getPreferences();
         this.availableSeats = ride.getAvailableSeats();
+        this.createdAt=ride.getCreatedAt();
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
     public String getId() {

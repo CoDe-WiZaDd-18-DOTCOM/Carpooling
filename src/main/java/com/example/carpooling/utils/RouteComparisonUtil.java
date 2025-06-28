@@ -27,6 +27,8 @@ public class RouteComparisonUtil {
         boolean pickupFound = false;
         boolean dropFound = false;
 
+        LocalTime currentTime = LocalTime.now();
+
         HashSet<String> preferredSet = new HashSet<>();
         preferredSet.add(pickupPoint.getArea());
         preferredSet.add(dropPoint.getArea());
@@ -46,7 +48,7 @@ public class RouteComparisonUtil {
                 if (pickupFound && dropFound) break;
             }
 
-            if (!pickupFound) return new RouteMatchResult(0, "Pickup point not found in driver's route",localTime);
+            if (!pickupFound || localTime.isBefore(currentTime)) return new RouteMatchResult(0, "Pickup point not found in driver's route",localTime);
             if (!dropFound) return new RouteMatchResult(50, "Drop point not found in driver's route",localTime);
 
         } else {
@@ -68,7 +70,7 @@ public class RouteComparisonUtil {
                 if (pickupFound && dropFound) break;
             }
 
-            if (!pickupFound) return new RouteMatchResult(0, "Pickup point not found in driver's route",localTime);
+            if (!pickupFound || localTime.isBefore(currentTime)) return new RouteMatchResult(0, "Pickup point not found in driver's route",localTime);
             if (!dropFound) score += DESTINATION_NOT_FOUND_PENALTY;
 
             score *= (matchedCount / totalCount);

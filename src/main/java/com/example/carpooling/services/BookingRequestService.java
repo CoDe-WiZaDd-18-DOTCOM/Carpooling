@@ -99,4 +99,12 @@ public class BookingRequestService {
         return bookingWrappers;
     }
 
+    public void deleteRequest(ObjectId id){
+        try {
+            bookingRequestRepository.deleteById(id);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
 }

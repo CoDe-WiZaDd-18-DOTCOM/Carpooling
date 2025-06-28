@@ -13,4 +13,5 @@ public interface RideRepository extends MongoRepository<Ride, ObjectId> {
     List<Ride> findAllByDriver(User driver);
     List<Ride> findAllByStatus(RideStatus rideStatus);
     Optional<Ride> findById(ObjectId id);
+
 }

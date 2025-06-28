@@ -4,12 +4,16 @@ import com.example.carpooling.entities.BookingRequest;
 import com.example.carpooling.entities.SosAlerts;
 import com.example.carpooling.entities.User;
 import com.example.carpooling.repositories.SosAlertsRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@Slf4j
 public class SosAlertsService {
 
     @Autowired
@@ -17,6 +21,8 @@ public class SosAlertsService {
 
     @Autowired
     private RedisService redisService;
+
+    private static final Logger logger = LoggerFactory.getLogger(SosAlertsService.class);
 
     public SosAlerts addAlert(String message, BookingRequest bookingRequest){
         SosAlerts sosAlerts = new SosAlerts(message, bookingRequest);
@@ -26,6 +32,8 @@ public class SosAlertsService {
     }
 
     public List<SosAlerts> getAlerts(){
+        logger.info("fetching sosAlerts");
+        logger.debug("debugged");
         List<SosAlerts> sosAlerts = redisService.getList("sosAlerts",SosAlerts.class);
         if(sosAlerts!=null){
             System.out.println("cache hit on sosalerts");

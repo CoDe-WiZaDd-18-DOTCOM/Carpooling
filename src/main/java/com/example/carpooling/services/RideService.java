@@ -13,6 +13,7 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,12 +48,7 @@ public class RideService {
     }
 
     public List<SearchResponse> getPrefferedRides(User user, SearchRequest searchRequest){
-        List<Ride> rides = redisService.getList("rides",Ride.class);
-        if(rides==null){
-            rides = rideRepository.findAllByStatus(RideStatus.OPEN);
-            redisService.set("rides",rides,300l);
-            System.out.println("Cache miss on rides");
-        }
+        List<Ride> rides = rideRepository.findAllByStatus(RideStatus.OPEN);
 
         List<SearchResponse> searchResponses = new ArrayList<>();
         for(Ride ride:rides){
@@ -82,8 +78,8 @@ public class RideService {
         ride.setVehicle(rideDto.getVehicle());
         ride.setPreferences(rideDto.getPreferences());
         ride.setStatus(RideStatus.valueOf("OPEN"));
+        ride.setCreatedAt(LocalDateTime.now());
 
-        redisService.delete("rides");
 
         rideRepository.save(ride);
         return ride;
@@ -100,8 +96,17 @@ public class RideService {
         Ride ride = rideRepository.findById(id).orElse(null);
         if(ride!=null) {
             ride.setStatus(RideStatus.CLOSED);
+            ride.setCompletedAt(LocalDateTime.now());
             rideRepository.save(ride);
         }
         return ride;
+    }
+
+    public void deleteRide(ObjectId id){
+        try {
+            rideRepository.deleteById(id);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 }

@@ -1,0 +1,43 @@
+<configuration scan="true" scanPeriod="30 seconds">
+    <property name="LOG_DIR" value="logs" />
+    <property name="APP_NAME" value="carpooling-app" />
+
+    <!-- 👇 Console Logger -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 👇 Rolling File Logger -->
+    <appender name="ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/${APP_NAME}.log</file>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- Rolls every month or 10MB -->
+            <fileNamePattern>${LOG_DIR}/${APP_NAME}-%d{yyyy-MM}.%i.log.gz</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy
+                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>10MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>12</maxHistory>
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 👇 DEBUG logging only for your codebase -->
+    <logger name="com.example.carpooling" level="DEBUG" additivity="false">
+        <appender-ref ref="ROLLING" />
+        <appender-ref ref="CONSOLE" />
+    </logger>
+
+    <!-- 👇 Root logger for all other packages -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="ROLLING" />
+    </root>
+</configuration>
