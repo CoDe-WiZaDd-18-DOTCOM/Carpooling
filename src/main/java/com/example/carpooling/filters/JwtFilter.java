@@ -4,6 +4,7 @@ import com.example.carpooling.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -33,7 +34,13 @@ public class JwtFilter  extends OncePerRequestFilter{
             username = jwtUtil.extractUsername(jwt);
         }
         if (username != null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+//            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                String role =jwtUtil.extractRole(jwt);
+                UserDetails userDetails = User
+                    .withUsername(username)
+                    .password("")
+                    .authorities("ROLE_" + role)
+                    .build();
             if (jwtUtil.validateToken(jwt)) {
                 UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

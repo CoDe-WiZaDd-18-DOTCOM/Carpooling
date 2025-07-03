@@ -95,6 +95,7 @@ public class SosController {
 
             return ResponseEntity.ok("🚨 SOS alert sent successfully!");
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             return ResponseEntity.status(500).body("Failed to send SOS: " + e.getMessage());
         }
     }
