@@ -53,7 +53,7 @@ public class RideService {
         List<SearchResponse> searchResponses = new ArrayList<>();
         for(Ride ride:rides){
             RouteMatchResult routeMatchResult = routeComparisonUtil.compareRoute(ride.getRoute(),
-                                                                            searchRequest.getPrefferedRoute(),
+                                                                            searchRequest.getPreferredRoute(),
                     searchRequest.getPickup(), searchRequest.getDrop(), ride.getPreferences(), user.getPreferences());
             if(routeMatchResult.getScore()!=0) {
                 BookingRequest bookingRequest = checkAndGetRequest(ride, user);

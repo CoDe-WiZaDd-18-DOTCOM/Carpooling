@@ -52,17 +52,16 @@ public class SosController {
 
             sosAlertsService.addAlert(message, bookingRequest);
 
-            String area = bookingRequest.getPickup().getArea();
-            String city = bookingRequest.getPickup().getCity();
-            String authorityEmail = sosAuthoritiesService.getEmail(area, city);
+            String label = bookingRequest.getPickup().getLabel();
+            String authorityEmail = sosAuthoritiesService.getEmail(label);
 
             String subject = "🚨 SOS Alert from CarpoolConnect!";
             String body = """
                 🚨 *Emergency SOS Alert from CarpoolConnect* 🚨
 
                 📍 Ride Information:
-                - Pickup: %s (%s)
-                - Drop: %s (%s)
+                - Pickup: %s
+                - Drop: %s
                 - Date/Time: %s
 
                 🧍‍♂️ Rider Information:
@@ -81,8 +80,8 @@ public class SosController {
 
                 Please respond immediately to this alert.
                 """.formatted(
-                    bookingRequest.getPickup().getArea(), bookingRequest.getPickup().getCity(),
-                    bookingRequest.getDestination().getArea(), bookingRequest.getDestination().getCity(),
+                    bookingRequest.getPickup().getLabel(),
+                    bookingRequest.getDestination().getLabel(),
                     ride.getRoute().getFirst().getArrivalTime().toString(),
                     rider.getFirstName(), rider.getLastName(), rider.getEmail(), rider.getPhoneNumber(),
                     driver.getFirstName(), driver.getLastName(), driver.getEmail(), driver.getPhoneNumber(),
@@ -142,8 +141,8 @@ public class SosController {
             String subject = "📍 Live Location Shared from CarpoolConnect";
             String body = "User " + user.getFirstName() + " " + user.getLastName() +
                     " has shared their current location during a ride.\n\nLocation: " + location +
-                    "\n\nin the following ride: " + bookingRequest.getPickup().getArea() +
-                    " -------> " + bookingRequest.getDestination().getArea();
+                    "\n\nin the following ride: " + bookingRequest.getPickup().getLabel() +
+                    " -------> " + bookingRequest.getDestination().getLabel();
 
             emailService.sendEmergencyEmail(to, subject, body);
             return ResponseEntity.ok("Location shared successfully!");

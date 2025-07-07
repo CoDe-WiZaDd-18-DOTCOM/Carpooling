@@ -7,7 +7,7 @@ import java.util.List;
 public class SearchRequest {
     private Location pickup;
     private Location drop;
-    private List<Location> prefferedRoute;
+    private List<Location> preferredRoute;
 
     public Location getPickup() {
         return pickup;
@@ -25,11 +25,11 @@ public class SearchRequest {
         this.drop = drop;
     }
 
-    public List<Location> getPrefferedRoute() {
-        return prefferedRoute;
+    public List<Location> getPreferredRoute() {
+        return preferredRoute;
     }
 
-    public void setPrefferedRoute(List<Location> prefferedRoute) {
-        this.prefferedRoute = prefferedRoute;
+    public void setPreferredRoute(List<Location> preferredRoute) {
+        this.preferredRoute = preferredRoute;
     }
 }

@@ -80,7 +80,7 @@ public class GoogleAuthController {
                     userRepository.save(user);
                 }
 
-                String jwtToken = jwtUtil.generateToken(email);
+                String jwtToken = jwtUtil.generateToken(email,Role.RIDER.name());
 
                 return ResponseEntity.status(302)
                         .header("Location", "http://localhost:5173/oauth-success?token=" + jwtToken)

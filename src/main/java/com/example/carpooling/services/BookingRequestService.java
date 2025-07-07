@@ -1,7 +1,6 @@
 package com.example.carpooling.services;
 
 import com.example.carpooling.dto.BookingWrapper;
-import com.example.carpooling.dto.RideWrapper;
 import com.example.carpooling.dto.SearchRequest;
 import com.example.carpooling.entities.BookingRequest;
 import com.example.carpooling.entities.Ride;
@@ -62,7 +61,7 @@ public class BookingRequestService {
         bookingRequest.setApproved(false);
         bookingRequest.setDestination(searchRequest.getDrop());
         bookingRequest.setPickup(searchRequest.getPickup());
-        bookingRequest.setPreferredRoute(searchRequest.getPrefferedRoute());
+        bookingRequest.setPreferredRoute(searchRequest.getPreferredRoute());
         bookingRequest.setRide(ride);
         bookingRequest.setDriver(ride.getDriver());
         bookingRequest.setRider(rider);

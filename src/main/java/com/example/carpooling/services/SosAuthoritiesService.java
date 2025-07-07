@@ -13,13 +13,12 @@ public class SosAuthoritiesService {
     private SosAuthoritesRepository sosAuthoritesRepository;
 
     public SosAuthorities addAuthority(SosAuthorityMapper sosAuthorityMapper){
-        SosAuthorities sosAuthorities = new SosAuthorities(sosAuthorityMapper.getArea(),
-                                            sosAuthorityMapper.getCity(), sosAuthorityMapper.getEmail());
+        SosAuthorities sosAuthorities = new SosAuthorities(sosAuthorityMapper.getLabel(), sosAuthorityMapper.getEmail());
         sosAuthoritesRepository.save(sosAuthorities);
         return sosAuthorities;
     }
 
-    public String getEmail(String area,String city){
-        return sosAuthoritesRepository.findByAreaAndCity(area, city).getEmail();
+    public String getEmail(String label){
+        return sosAuthoritesRepository.findByLabel(label).getEmail();
     }
 }

@@ -13,7 +13,6 @@ import java.util.List;
 @Component
 public class RouteComparisonUtil {
 
-    static final int DESTINATION_NOT_FOUND_PENALTY = -20;
     static final int PREFERENCE_MISMATCH_PENALTY = -3;
 
     public RouteMatchResult compareRoute(List<RouteStop> driverRoute,
@@ -24,62 +23,75 @@ public class RouteComparisonUtil {
                                          Preferences preferred) {
 
         double score = 100.0;
+
         boolean pickupFound = false;
         boolean dropFound = false;
 
         LocalTime currentTime = LocalTime.now();
 
         HashSet<String> preferredSet = new HashSet<>();
-        preferredSet.add(pickupPoint.getArea());
-        preferredSet.add(dropPoint.getArea());
+        preferredSet.add(pickupPoint.getLabel());
+        preferredSet.add(dropPoint.getLabel());
 
-        preferredRoute.forEach(loc -> preferredSet.add(loc.getArea()));
+
         LocalTime localTime = LocalTime.MIN;
 
-        if (preferredRoute.isEmpty()) {
-            for (RouteStop stop : driverRoute) {
-                String area = stop.getLocation().getArea();
-                if (area.equals(pickupPoint.getArea())) {
-                    pickupFound = true;
-                    localTime=stop.getArrivalTime();
-                }
-                else if (area.equals(dropPoint.getArea()) && pickupFound) dropFound = true;
 
-                if (pickupFound && dropFound) break;
+        if (preferredRoute==null || preferredRoute.isEmpty()) {
+            System.out.println("entered");
+            for (RouteStop stop : driverRoute) {
+                if(!pickupFound) pickupFound = GeoUtils.nearBy(pickupPoint.getLat(), pickupPoint.getLon(),
+                        stop.getLocation().getLat(),stop.getLocation().getLon());
+
+                dropFound = GeoUtils.nearBy(dropPoint.getLat(), dropPoint.getLon(),
+                        stop.getLocation().getLat(),stop.getLocation().getLon());
+
+                if (pickupFound) {
+                    if(localTime.equals(LocalTime.MIN)) localTime=stop.getArrivalTime();
+                }
+
+                if(pickupFound && dropFound) break;
             }
 
-            if (!pickupFound || localTime.isBefore(currentTime)) return new RouteMatchResult(0, "Pickup point not found in driver's route",localTime);
-            if (!dropFound) return new RouteMatchResult(50, "Drop point not found in driver's route",localTime);
+            if (!pickupFound || localTime.isBefore(currentTime) || !dropFound) return new RouteMatchResult(0, "Pickup/drop point not found in driver's route",localTime);
+            return new RouteMatchResult(100, "Ride found",localTime);
 
-        } else {
+        }
+        else {
             double totalCount = 0, matchedCount = 0;
+            System.out.println("entered_down");
+            preferredRoute.forEach(loc -> preferredSet.add(loc.getLabel()));
 
             for (RouteStop stop : driverRoute) {
-                String area = stop.getLocation().getArea();
-                if (area.equals(pickupPoint.getArea())) {
-                    pickupFound = true;
-                    localTime=stop.getArrivalTime();
-                }
-                else if (area.equals(dropPoint.getArea()) && pickupFound) dropFound = true;
+                String area = stop.getLocation().getLabel();
+
+                if(!pickupFound) pickupFound = GeoUtils.nearBy(pickupPoint.getLat(), pickupPoint.getLon(),
+                        stop.getLocation().getLat(),stop.getLocation().getLon());
+
+                dropFound = GeoUtils.nearBy(dropPoint.getLat(), dropPoint.getLon(),
+                        stop.getLocation().getLat(),stop.getLocation().getLon());
+
 
                 if (pickupFound) {
                     totalCount++;
+                    if(localTime.equals(LocalTime.MIN)) localTime=stop.getArrivalTime();
+
                     if (preferredSet.contains(area)) matchedCount++;
                 }
 
                 if (pickupFound && dropFound) break;
             }
 
-            if (!pickupFound || localTime.isBefore(currentTime)) return new RouteMatchResult(0, "Pickup point not found in driver's route",localTime);
-            if (!dropFound) score += DESTINATION_NOT_FOUND_PENALTY;
+            if (!pickupFound || localTime.isBefore(currentTime) || !dropFound) return new RouteMatchResult(0, "Pickup/drop point not found in driver's route",localTime);
 
             score *= (matchedCount / totalCount);
+            score*=1.2;
         }
 
         score += calculatePreferencePenalty(current, preferred);
+        if(score>100) score=100;
 
         if (score <= 0) return new RouteMatchResult(0, "Route and preferences mismatch",localTime);
-
         return new RouteMatchResult(score, "Route match successful",localTime);
     }
 

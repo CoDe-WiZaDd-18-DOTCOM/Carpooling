@@ -9,5 +9,5 @@ import java.util.Optional;
 
 @Repository
 public interface SosAuthoritesRepository extends MongoRepository<SosAuthorities, ObjectId> {
-    SosAuthorities findByAreaAndCity(String area,String city);
+    SosAuthorities findByLabel(String label);
 }
