@@ -28,10 +28,6 @@ public class RideandBookingScheduler {
 
             for(Ride ride:rides){
                 if(ride.getCreatedAt().isBefore(LocalDateTime.now().minusDays(30))){
-                    List<BookingWrapper> bookingWrappers = bookingRequestService.getBookingByRide(ride);
-                    for(BookingWrapper bookingWrapper:bookingWrappers){
-                        bookingRequestService.deleteRequest(bookingWrapper.getBookingRequest().getId());
-                    }
                     rideService.deleteRide(ride.getId());
                 }
             }

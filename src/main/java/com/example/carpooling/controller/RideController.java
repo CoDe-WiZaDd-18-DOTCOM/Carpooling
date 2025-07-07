@@ -106,4 +106,16 @@ public class RideController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
+    @Operation(summary = "Delete a ride", description = "Allows a driver to delete a ride by providing id. Requires DRIVER role.")
+    @DeleteMapping("delete/{id}")
+    @PreAuthorize("hasRole('DRIVER')")
+    public ResponseEntity<String> deleteRide(@PathVariable ObjectId id) {
+        try {
+            rideService.deleteRide(id);
+            return new ResponseEntity<>("Deleted", HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 }

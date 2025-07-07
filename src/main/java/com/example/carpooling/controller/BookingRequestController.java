@@ -119,6 +119,22 @@ public class BookingRequestController {
             return new ResponseEntity<>(bookingRequest, HttpStatus.OK);
 
         } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Operation(summary = "Delete a booking request", description = "Allows a rider to delete a booking request by ID.Rider must own that booking request and it should not be accepted yet.")
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteRequest(@PathVariable ObjectId id) {
+        try {
+            BookingRequest booking = bookingRequestService.getBooking(id);
+
+            if (!booking.getRider().getEmail().equals(authUtil.getEmail()) || booking.isApproved()) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+
+            bookingRequestService.deleteRequest(id);
+            return new ResponseEntity<>("deleted", HttpStatus.OK);
+        } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }

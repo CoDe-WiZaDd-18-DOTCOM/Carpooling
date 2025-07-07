@@ -104,6 +104,11 @@ public class RideService {
 
     public void deleteRide(ObjectId id){
         try {
+            Ride ride=rideRepository.findById(id).orElse(null);
+            if(ride==null) return;
+
+            List<BookingRequest> bookingRequests = bookingRequestRepository.findAllByRide(ride);
+            for(BookingRequest bookingRequest:bookingRequests) bookingRequestRepository.delete(bookingRequest);
             rideRepository.deleteById(id);
         } catch (Exception e) {
             System.out.println(e.getMessage());
