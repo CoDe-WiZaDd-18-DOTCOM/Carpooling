@@ -7,9 +7,12 @@ import com.example.carpooling.utils.AuthUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +22,7 @@ import java.util.List;
 @Tag(name = "SOS", description = "APIs for emergency alerts, live location sharing, and SOS authority management.")
 public class SosController {
 
+    private static final Logger log = LoggerFactory.getLogger(SosController.class);
     @Autowired
     private EmailService emailService;
 
@@ -53,7 +57,7 @@ public class SosController {
             sosAlertsService.addAlert(message, bookingRequest);
 
             String label = bookingRequest.getPickup().getLabel();
-            String authorityEmail = sosAuthoritiesService.getEmail(label);
+            String authorityEmail = sosAuthoritiesService.getAuthority(label).getEmail();
 
             String subject = "🚨 SOS Alert from CarpoolConnect!";
             String body = """
@@ -103,6 +107,7 @@ public class SosController {
             summary = "Register an SOS authority",
             description = "Adds a new SOS authority (e.g. police or emergency unit) responsible for a specific area and city."
     )
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/sos/authority")
     public ResponseEntity<SosAuthorities> postAuthority(@RequestBody SosAuthorityMapper sosAuthorityMapper) {
         try {
@@ -110,6 +115,38 @@ public class SosController {
             return new ResponseEntity<>(sosAuthorities, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
+        }
+    }
+
+    @Operation(
+            summary = "get SOS authority",
+            description = "gets the details of SOS authority for a specific area and city."
+    )
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/sos/authority/{label}")
+    public ResponseEntity<?> getAuthority(@PathVariable String label) {
+        try {
+            SosAuthorities sosAuthorities = sosAuthoritiesService.getAuthority(label);
+            return new ResponseEntity<>(sosAuthorities, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Operation(
+            summary = "update SOS authority",
+            description = "update the details of SOS authority for a specific area and city."
+    )
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/sos/authority/{id}")
+    public ResponseEntity<?> updateAuthority(@PathVariable ObjectId id,@RequestBody SosAuthorityMapper sosAuthorityMapper) {
+        try {
+            SosAuthorities sosAuthorities = sosAuthoritiesService.updateAuthority(id,sosAuthorityMapper);
+            return new ResponseEntity<>(sosAuthorities, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

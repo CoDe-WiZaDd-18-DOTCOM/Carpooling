@@ -6,11 +6,13 @@ import com.example.carpooling.dto.SearchRequest;
 import com.example.carpooling.dto.SearchResponse;
 import com.example.carpooling.entities.Ride;
 import com.example.carpooling.entities.User;
+import com.example.carpooling.enums.Role;
 import com.example.carpooling.services.RideService;
 import com.example.carpooling.services.UserService;
 import com.example.carpooling.utils.AuthUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/rides")
 @Tag(name = "Rides", description = "APIs for creating, listing, and searching carpooling rides.")
@@ -36,6 +39,7 @@ public class RideController {
 
     @Operation(summary = "Get all rides", description = "Returns a list of all available rides in the system.")
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Ride>> getAllRides() {
         try {
             List<Ride> rides = rideService.getAllRides();
@@ -95,24 +99,32 @@ public class RideController {
         }
     }
 
-    @Operation(summary = "Close a ride", description = "Allows a driver to close a completed ride by providing id. Requires DRIVER role.")
+    @Operation(summary = "Close a ride", description = "Allows a driver to close a completed ride by providing id. Requires DRIVER or ADMIN role.")
     @PostMapping("close-ride/{id}")
-    @PreAuthorize("hasRole('DRIVER')")
+    @PreAuthorize("hasRole('DRIVER') or hasRole('ADMIN')")
     public ResponseEntity<Ride> closeRide(@PathVariable ObjectId id) {
         try {
+            String email = authUtil.getEmail();
+            User user = userService.getUser(email);
             Ride ride = rideService.closeRide(id);
+            if(user.getRole().equals(Role.ADMIN)) log.info("admin closed the ride:" +id.toHexString());
+
             return new ResponseEntity<>(ride, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
-    @Operation(summary = "Delete a ride", description = "Allows a driver to delete a ride by providing id. Requires DRIVER role.")
+    @Operation(summary = "Delete a ride", description = "Allows a driver to delete a ride by providing id. Requires DRIVER or ADMIN role.")
     @DeleteMapping("delete/{id}")
-    @PreAuthorize("hasRole('DRIVER')")
+    @PreAuthorize("hasRole('DRIVER') or hasRole('ADMIN')")
     public ResponseEntity<String> deleteRide(@PathVariable ObjectId id) {
         try {
+            String email = authUtil.getEmail();
+            User user = userService.getUser(email);
             rideService.deleteRide(id);
+            if(user.getRole().equals(Role.ADMIN)) log.info("admin deleted the ride:" +id.toHexString());
+
             return new ResponseEntity<>("Deleted", HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

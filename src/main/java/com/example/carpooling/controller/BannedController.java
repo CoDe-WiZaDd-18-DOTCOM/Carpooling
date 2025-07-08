@@ -6,6 +6,7 @@ import com.example.carpooling.entities.User;
 import com.example.carpooling.enums.Role;
 import com.example.carpooling.services.BannedService;
 import com.example.carpooling.services.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,7 @@ public class BannedController {
 
     private static final Logger logger = LoggerFactory.getLogger(BannedController.class);
 
+    @Operation(summary = "Get Banned list", description = "Get list of banned users")
     @GetMapping("/all")
     public ResponseEntity<?> getAll(){
         try {
@@ -37,6 +39,7 @@ public class BannedController {
         }
     }
 
+    @Operation(summary = "find user", description = "find user by entering his email if not present then null will be returned.")
     @GetMapping("/user/{email}")
     public ResponseEntity<?> getUser(@PathVariable String email){
         try {
@@ -47,10 +50,12 @@ public class BannedController {
         }
     }
 
+    @Operation(summary = "Ban user", description = "Ban user by providing all the required details")
     @PostMapping("/user")
     public ResponseEntity<?> banUser(@RequestBody BannedDto bannedDto){
         try {
             Banned banned = new Banned(bannedDto);
+            logger.info("user banned: "+banned.getEmail());
             return new ResponseEntity<>(banned, HttpStatus.OK);
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -58,6 +63,7 @@ public class BannedController {
         }
     }
 
+    @Operation(summary = "promote user", description = "promote user from user to admin")
     @PostMapping("/user/{email}")
     public ResponseEntity<?> promoteUser(@PathVariable String email){
         try {
@@ -72,11 +78,13 @@ public class BannedController {
         }
     }
 
+    @Operation(summary = "remove ban", description = "lifts ban imposed on the user")
     @DeleteMapping("/user/{email}")
     public ResponseEntity<?> deleteUser(@PathVariable String email){
         try {
             if(!bannedService.existByEmail(email)) return new ResponseEntity<>("user doesn't exist",HttpStatus.BAD_REQUEST);
             bannedService.liftBan(email);
+            logger.info("ban lifted on user: "+email);
             return ResponseEntity.ok("Done");
         } catch (Exception e) {
             logger.error(e.getMessage());
