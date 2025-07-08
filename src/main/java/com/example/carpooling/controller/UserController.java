@@ -7,21 +7,27 @@ import com.example.carpooling.services.UserService;
 import com.example.carpooling.utils.AuthUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Base64;
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
-@Tag(name = "Users", description = "APIs related to user profile details, updates, and profile picture upload.")
+@Tag(name = "Users", description = "APIs related to user profile details, updates, profile picture upload, and admin operations.")
 public class UserController {
 
     @Autowired private UserService userService;
     @Autowired private AuthUtil authUtil;
+
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Operation(
             summary = "Get current user profile",
@@ -61,6 +67,21 @@ public class UserController {
             return ResponseEntity.ok("Profile picture uploaded successfully.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Upload failed: " + e.getMessage());
+        }
+    }
+
+    @Operation(
+            summary = "Get all users list",
+            description = "Returns all the users in db. Require admin role to access it."
+    )
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/me")
+    public ResponseEntity<?> getUsersList() {
+        try {
+            return ResponseEntity.ok(userService.getAllUsers());
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

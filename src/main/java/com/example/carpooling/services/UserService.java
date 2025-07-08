@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class UserService {
 
@@ -23,6 +26,13 @@ public class UserService {
 
     public User getUser(String email){
         return userRepository.findByEmail(email);
+    }
+
+    public List<UserProfileDto> getAllUsers(){
+        List<User> users = userRepository.findAll();
+        List<UserProfileDto> userProfileDtos = new ArrayList<>();
+        for (User user:users) userProfileDtos.add(mapToDto(user));
+        return userProfileDtos;
     }
 
     public void addUser(User user){
