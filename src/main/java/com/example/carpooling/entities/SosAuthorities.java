@@ -18,7 +18,7 @@ public class SosAuthorities {
 
     private String email;
 
-    public SosAuthorities(String area, String email) {
+    public SosAuthorities(String label, String email) {
         this.label = label;
         this.email = email;
     }

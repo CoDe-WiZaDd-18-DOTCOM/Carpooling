@@ -20,6 +20,9 @@ public class UserService {
     @Autowired
     private RedisService redisService;
 
+    @Autowired
+    private AnalyticsService analyticsService;
+
     public boolean isUserExists(String email){
         return userRepository.existsByEmail(email);
     }
@@ -37,6 +40,7 @@ public class UserService {
 
     public void addUser(User user){
         userRepository.save(user);
+        analyticsService.incUsers();
     }
 
     public UserProfileDto getUserProfile(String email) {

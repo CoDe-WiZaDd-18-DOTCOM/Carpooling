@@ -3,6 +3,7 @@ package com.example.carpooling.controller;
 import com.example.carpooling.dto.UpdateProfileRequest;
 import com.example.carpooling.dto.UserProfileDto;
 import com.example.carpooling.entities.User;
+import com.example.carpooling.enums.Role;
 import com.example.carpooling.services.UserService;
 import com.example.carpooling.utils.AuthUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -75,10 +76,26 @@ public class UserController {
             description = "Returns all the users in db. Require admin role to access it."
     )
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/me")
+    @GetMapping("/user-list")
     public ResponseEntity<?> getUsersList() {
         try {
             return ResponseEntity.ok(userService.getAllUsers());
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    @Operation(summary = "promote user", description = "promote user from user to admin")
+    @PostMapping("/user/{email}")
+    public ResponseEntity<?> promoteUser(@PathVariable String email){
+        try {
+            User user = userService.getUser(email);
+            user.setRole(Role.ADMIN);
+            userService.addUser(user);
+            logger.info("new user promted to admin: "+email);
+            return ResponseEntity.ok("promoted");
         } catch (Exception e) {
             logger.error(e.getMessage());
             return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);

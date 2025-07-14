@@ -14,6 +14,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +24,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Slf4j
 @RestController
 @RequestMapping("/rides")
 @Tag(name = "Rides", description = "APIs for creating, listing, and searching carpooling rides.")
@@ -37,13 +38,15 @@ public class RideController {
     @Autowired
     private UserService userService;
 
+    private static final Logger log = LoggerFactory.getLogger(RideController.class);
+
     @Operation(summary = "Get all rides", description = "Returns a list of all available rides in the system.")
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<Ride>> getAllRides() {
+    public ResponseEntity<List<RideWrapper>> getAllRides() {
         try {
-            List<Ride> rides = rideService.getAllRides();
-            return new ResponseEntity<>(rides, HttpStatus.OK);
+            List<RideWrapper> rideWrappers = rideService.getAllRides();
+            return new ResponseEntity<>(rideWrappers, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

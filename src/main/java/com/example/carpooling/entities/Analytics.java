@@ -10,15 +10,26 @@ import java.util.Map;
 public class Analytics {
 
     @Id
-    private String id="default";
+    private String id;
 
     private long totalUsers = 0;
     private long totalRides = 0;
     private long totalBookings = 0;
     private long totalSOS = 0;
 
-    private Map<String, Long> ridesByCity = new HashMap<>();
-    private Map<String, Long> ridesPerDriver = new HashMap<>();
+    private Map<String, Long> ridesPerDriver;
+    private Map<String, Long> ridesByCity;
+
+    public Analytics() {
+        this.id = "default";
+        this.totalUsers = 0;
+        this.totalRides = 0;
+        this.totalBookings = 0;
+        this.totalSOS = 0;
+        this.ridesByCity = new HashMap<>();
+        this.ridesPerDriver = new HashMap<>();
+    }
+
 
     public String getId() {
         return id;

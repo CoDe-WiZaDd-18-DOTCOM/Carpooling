@@ -1,5 +1,5 @@
 package com.example.carpooling.enums;
 
 public enum SosStatus {
-    PENDING,APPROVED
+    PENDING,SOLVED
 }

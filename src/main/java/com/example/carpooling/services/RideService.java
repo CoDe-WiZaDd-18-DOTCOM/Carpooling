@@ -32,8 +32,16 @@ public class RideService {
     @Autowired
     private BookingRequestRepository bookingRequestRepository;
 
-    public List<Ride> getAllRides(){
-        return rideRepository.findAll();
+    @Autowired
+    private AnalyticsService analyticsService;
+
+    public List<RideWrapper> getAllRides(){
+        List<Ride> rides= rideRepository.findAll();
+        List<RideWrapper> rideWrappers = new ArrayList<>();
+        for(Ride ride:rides){
+            rideWrappers.add(new RideWrapper(ride));
+        }
+        return rideWrappers;
     }
 
     public List<RideWrapper> getAllRidesOfDriver(User driver){
@@ -82,6 +90,7 @@ public class RideService {
 
 
         rideRepository.save(ride);
+        analyticsService.incRides(user.getEmail(), rideDto.getCity());
         return ride;
     }
 

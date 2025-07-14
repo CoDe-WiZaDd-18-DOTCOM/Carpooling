@@ -23,6 +23,7 @@ public class Banned {
 
     private int duration;
 
+    public Banned() {}
 
     public Banned(BannedDto bannedDto) {
         this.email = bannedDto.getEmail();

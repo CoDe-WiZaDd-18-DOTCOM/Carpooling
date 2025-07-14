@@ -27,6 +27,14 @@ public class SosAlerts {
         status=SosStatus.PENDING;
     }
 
+    public SosStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(SosStatus status) {
+        this.status = status;
+    }
+
     public ObjectId getId() {
         return id;
     }

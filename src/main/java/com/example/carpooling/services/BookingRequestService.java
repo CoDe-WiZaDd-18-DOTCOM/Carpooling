@@ -27,6 +27,9 @@ public class BookingRequestService {
     @Autowired
     private RedisService redisService;
 
+    @Autowired
+    private AnalyticsService analyticsService;
+
     public BookingRequest getBooking(ObjectId id) {
         return bookingRequestRepository.findById(id).orElse(null);
     }
@@ -88,6 +91,7 @@ public class BookingRequestService {
         bookingRequest.setRide(ride);
         bookingRequest.setApproved(true);
         bookingRequestRepository.save(bookingRequest);
+        analyticsService.incBookings();
         return bookingRequest;
     }
 

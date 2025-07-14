@@ -1,5 +1,6 @@
 package com.example.carpooling.controller;
 
+import com.example.carpooling.dto.SosAlertWrapper;
 import com.example.carpooling.dto.SosAuthorityMapper;
 import com.example.carpooling.entities.*;
 import com.example.carpooling.services.*;
@@ -104,6 +105,37 @@ public class SosController {
     }
 
     @Operation(
+            summary = "Fetch all SOS alerts",
+            description = "Returns all SOS alerts raised by users, including their messages and linked bookings."
+    )
+    @GetMapping("/sos/alerts")
+    public ResponseEntity<List<SosAlertWrapper>> getAlerts() {
+        try {
+            return new ResponseEntity<>(sosAlertsService.getAlerts(), HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
+    @Operation(
+            summary = "Close a SOS alert",
+            description = "Closes a SOS alert after it got solved."
+    )
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/sos/close/{id}")
+    public ResponseEntity<?> closeAlert(@PathVariable String id) {
+        try {
+            sosAlertsService.closeAlert(new ObjectId(id));
+            return new ResponseEntity<>("closed", HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
+        }
+    }
+
+
+    @Operation(
             summary = "Register an SOS authority",
             description = "Adds a new SOS authority (e.g. police or emergency unit) responsible for a specific area and city."
     )
@@ -139,10 +171,10 @@ public class SosController {
             description = "update the details of SOS authority for a specific area and city."
     )
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/sos/authority/{id}")
-    public ResponseEntity<?> updateAuthority(@PathVariable ObjectId id,@RequestBody SosAuthorityMapper sosAuthorityMapper) {
+    @PutMapping("/sos/authority/{label}")
+    public ResponseEntity<?> updateAuthority(@PathVariable String label,@RequestBody SosAuthorityMapper sosAuthorityMapper) {
         try {
-            SosAuthorities sosAuthorities = sosAuthoritiesService.updateAuthority(id,sosAuthorityMapper);
+            SosAuthorities sosAuthorities = sosAuthoritiesService.updateAuthority(label,sosAuthorityMapper);
             return new ResponseEntity<>(sosAuthorities, HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -150,19 +182,6 @@ public class SosController {
         }
     }
 
-    @Operation(
-            summary = "Fetch all SOS alerts",
-            description = "Returns all SOS alerts raised by users, including their messages and linked bookings."
-    )
-    @GetMapping("/sos/alerts")
-    public ResponseEntity<List<SosAlerts>> getAlerts() {
-        try {
-            return new ResponseEntity<>(sosAlertsService.getAlerts(), HttpStatus.OK);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-    }
 
     @Operation(
             summary = "Share current location",

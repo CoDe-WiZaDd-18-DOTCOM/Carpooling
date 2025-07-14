@@ -13,10 +13,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @PreAuthorize("hasRole('ADMIN')")
-@RestController("/analytics")
+@RestController
+@RequestMapping("/analytics")
 @Tag(name = "Analytics", description = "Endpoints for Analysis.")
 public class AnalyticsController {
     private static final Logger log = LoggerFactory.getLogger(AnalyticsController.class);

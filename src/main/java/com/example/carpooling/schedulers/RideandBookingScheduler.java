@@ -1,6 +1,7 @@
 package com.example.carpooling.schedulers;
 
 import com.example.carpooling.dto.BookingWrapper;
+import com.example.carpooling.dto.RideWrapper;
 import com.example.carpooling.entities.BookingRequest;
 import com.example.carpooling.entities.Ride;
 import com.example.carpooling.services.BookingRequestService;
@@ -24,9 +25,10 @@ public class RideandBookingScheduler {
     @Scheduled(cron = "0 0 2 * * ?")
     public void cleanup(){
         try {
-            List<Ride> rides = rideService.getAllRides();
+            List<RideWrapper> rides = rideService.getAllRides();
 
-            for(Ride ride:rides){
+            for(RideWrapper rideWrapper:rides){
+                Ride ride=rideWrapper.getRide();
                 if(ride.getCreatedAt().isBefore(LocalDateTime.now().minusDays(30))){
                     rideService.deleteRide(ride.getId());
                 }

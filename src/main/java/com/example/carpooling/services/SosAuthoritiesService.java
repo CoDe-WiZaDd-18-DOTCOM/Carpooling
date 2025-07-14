@@ -25,8 +25,8 @@ public class SosAuthoritiesService {
         return sosAuthoritesRepository.findByLabel(label);
     }
 
-    public SosAuthorities updateAuthority(ObjectId objectId,SosAuthorityMapper sosAuthorityMapper){
-        SosAuthorities sosAuthorities = sosAuthoritesRepository.findById(objectId).orElse(null);
+    public SosAuthorities updateAuthority(String label,SosAuthorityMapper sosAuthorityMapper){
+        SosAuthorities sosAuthorities = sosAuthoritesRepository.findByLabel(label);
         if(sosAuthorities.getEmail()!=null && !Objects.equals(sosAuthorities.getEmail(), ""))
             sosAuthorities.setEmail(sosAuthorityMapper.getEmail());
 

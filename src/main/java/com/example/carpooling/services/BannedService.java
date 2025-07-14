@@ -16,6 +16,10 @@ public class BannedService {
         return bannedRepository.existsByEmail(email);
     }
 
+    public void banUser(Banned banned) {
+        bannedRepository.save(banned);
+    }
+
     public Banned findByEmail(String email){
         return bannedRepository.findByEmail(email);
     }
