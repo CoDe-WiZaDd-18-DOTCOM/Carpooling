@@ -82,6 +82,8 @@ public class UserService {
         dto.setPreferences(user.getPreferences());
         dto.setEmergencyEmail(user.getEmergencyEmail());
         dto.setProfileImageBase64(user.getProfileImageBase64());
+        dto.setRating(user.getRating());
+        dto.setRating_count(user.getRating_count());
         return dto;
     }
 

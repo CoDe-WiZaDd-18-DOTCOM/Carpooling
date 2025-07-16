@@ -40,6 +40,8 @@ public class BookingRequest {
 
     private boolean isApproved;
 
+    private boolean isRated;
+
 
 
     public Location getPickup() {
@@ -104,6 +106,14 @@ public class BookingRequest {
 
     public void setApproved(boolean approved) {
         isApproved = approved;
+    }
+
+    public boolean isRated() {
+        return isRated;
+    }
+
+    public void setRated(boolean rated) {
+        isRated = rated;
     }
 }
 

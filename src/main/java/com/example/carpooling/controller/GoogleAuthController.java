@@ -3,6 +3,7 @@ package com.example.carpooling.controller;
 import com.example.carpooling.entities.User;
 import com.example.carpooling.enums.Role;
 import com.example.carpooling.repositories.UserRepository;
+import com.example.carpooling.services.AnalyticsService;
 import com.example.carpooling.services.UserDetailsServiceImpl;
 import com.example.carpooling.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,9 @@ public class GoogleAuthController {
     @Autowired
     private JwtUtil jwtUtil;
 
+    @Autowired
+    private AnalyticsService analyticsService;
+
     @GetMapping("/callback")
     public ResponseEntity<?> handleGoogleCallback(@RequestParam String code) {
         try {
@@ -77,6 +81,9 @@ public class GoogleAuthController {
                     user.setEmail(email);
                     user.setPassword(passwordEncoder.encode(UUID.randomUUID().toString()));
                     user.setRole(Role.RIDER);
+                    user.setRating(0);
+                    user.setRating_count(0);
+                    analyticsService.incUsers();
                     userRepository.save(user);
                 }
 

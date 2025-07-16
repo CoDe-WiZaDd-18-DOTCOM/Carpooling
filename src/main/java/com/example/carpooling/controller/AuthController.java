@@ -46,6 +46,8 @@ public class AuthController {
         user.setPhoneNumber(signUpRequest.getPhoneNumber());
         user.setPreferences(signUpRequest.getPreferences());
         user.setEmergencyEmail(signUpRequest.getEmergencyEmail());
+        user.setRating(0);
+        user.setRating_count(0);
 
         userService.addUser(user);
 

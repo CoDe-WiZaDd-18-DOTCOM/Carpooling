@@ -68,6 +68,7 @@ public class BookingRequestService {
         bookingRequest.setRide(ride);
         bookingRequest.setDriver(ride.getDriver());
         bookingRequest.setRider(rider);
+        bookingRequest.setRated(false);
 
         bookingRequestRepository.save(bookingRequest);
         return bookingRequest;

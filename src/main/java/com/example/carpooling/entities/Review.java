@@ -11,11 +11,9 @@ public class Review {
     @Id
     private String id;
 
-    @DBRef
-    private User reviewer;
+    private String reviewer;
 
-    @DBRef
-    private User reviewee;
+    private String reviewee;
 
     @DBRef
     private Ride ride;
@@ -35,19 +33,19 @@ public class Review {
         this.id = id;
     }
 
-    public User getReviewer() {
+    public String getReviewer() {
         return reviewer;
     }
 
-    public void setReviewer(User reviewer) {
+    public void setReviewer(String reviewer) {
         this.reviewer = reviewer;
     }
 
-    public User getReviewee() {
+    public String getReviewee() {
         return reviewee;
     }
 
-    public void setReviewee(User reviewee) {
+    public void setReviewee(String reviewee) {
         this.reviewee = reviewee;
     }
 
