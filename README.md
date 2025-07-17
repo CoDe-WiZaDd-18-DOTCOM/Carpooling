@@ -222,7 +222,7 @@ public boolean isRideMatching(Ride ride, String pickup, String drop) {
 
 ## Summary
 
-Jass’s Carpooling System is a **modular, scalable ride-sharing platform** featuring:
+This Carpooling System is a **modular, scalable ride-sharing platform** featuring:
 
 - Fine-grained, role-based access
 - Smooth booking with approval flow
