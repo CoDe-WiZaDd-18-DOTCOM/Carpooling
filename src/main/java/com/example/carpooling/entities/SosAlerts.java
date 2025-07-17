@@ -1,7 +1,9 @@
 package com.example.carpooling.entities;
 
+import com.example.carpooling.enums.SosStatus;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -13,16 +15,24 @@ public class SosAlerts {
 
     private String message;
 
-    @DBRef
-    private User user;
 
     @DBRef
     private BookingRequest bookingRequest;
 
-    public SosAlerts(String message, User user, BookingRequest bookingRequest) {
+    private SosStatus status;
+
+    public SosAlerts(String message, BookingRequest bookingRequest) {
         this.message = message;
-        this.user = user;
         this.bookingRequest = bookingRequest;
+        status=SosStatus.PENDING;
+    }
+
+    public SosStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(SosStatus status) {
+        this.status = status;
     }
 
     public ObjectId getId() {
@@ -41,13 +51,6 @@ public class SosAlerts {
         this.message = message;
     }
 
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
 
     public BookingRequest getBookingRequest() {
         return bookingRequest;

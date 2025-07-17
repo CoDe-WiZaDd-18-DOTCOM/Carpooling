@@ -12,6 +12,24 @@ public class UserProfileDto {
     private Preferences preferences;
     private String emergencyEmail;
     private String profileImageBase64;
+    private double rating;
+    private int rating_count;
+
+    public int getRating_count() {
+        return rating_count;
+    }
+
+    public void setRating_count(int rating_count) {
+        this.rating_count = rating_count;
+    }
+
+    public double getRating() {
+        return rating;
+    }
+
+    public void setRating(double rating) {
+        this.rating = rating;
+    }
 
     public String getProfileImageBase64() {
         return profileImageBase64;

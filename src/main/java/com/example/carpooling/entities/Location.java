@@ -10,32 +10,32 @@ import lombok.NoArgsConstructor;
 //@AllArgsConstructor
 //@Builder
 public class Location {
-    private String landmark;
-    private String area;
-    private String city;
+    private String label;
+    private Double lat;
+    private Double lon;
 
-    public String getLandmark() {
-        return landmark;
+    public String getLabel() {
+        return label;
     }
 
-    public void setLandmark(String landmark) {
-        this.landmark = landmark;
+    public void setLabel(String label) {
+        this.label = label;
     }
 
-    public String getArea() {
-        return area;
+    public Double getLat() {
+        return lat;
     }
 
-    public void setArea(String area) {
-        this.area = area;
+    public void setLat(Double lat) {
+        this.lat = lat;
     }
 
-    public String getCity() {
-        return city;
+    public Double getLon() {
+        return lon;
     }
 
-    public void setCity(String city) {
-        this.city = city;
+    public void setLon(Double lon) {
+        this.lon = lon;
     }
 }
 

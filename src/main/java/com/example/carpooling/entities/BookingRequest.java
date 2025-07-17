@@ -4,6 +4,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -38,6 +39,8 @@ public class BookingRequest {
     private List<Location> preferredRoute;
 
     private boolean isApproved;
+
+    private boolean isRated;
 
 
 
@@ -103,6 +106,14 @@ public class BookingRequest {
 
     public void setApproved(boolean approved) {
         isApproved = approved;
+    }
+
+    public boolean isRated() {
+        return isRated;
+    }
+
+    public void setRated(boolean rated) {
+        isRated = rated;
     }
 }
 

@@ -16,6 +16,7 @@ public class RideDto {
 
     private Vehicle vehicle;
     private Preferences preferences;
+    private String city;
 
 //    public RouteStop getPickup() {
 //        return pickup;
@@ -71,5 +72,13 @@ public class RideDto {
 
     public void setPreferences(Preferences preferences) {
         this.preferences = preferences;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
     }
 }

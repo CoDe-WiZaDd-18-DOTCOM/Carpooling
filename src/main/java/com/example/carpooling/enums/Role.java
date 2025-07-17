@@ -1,6 +1,6 @@
 package com.example.carpooling.enums;
 
 public enum Role {
-    DRIVER, RIDER
+    DRIVER, RIDER, ADMIN
 }
 

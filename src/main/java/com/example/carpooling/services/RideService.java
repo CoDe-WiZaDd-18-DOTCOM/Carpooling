@@ -13,6 +13,7 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,10 +27,21 @@ public class RideService {
     private RouteComparisonUtil routeComparisonUtil;
 
     @Autowired
+    private RedisService redisService;
+
+    @Autowired
     private BookingRequestRepository bookingRequestRepository;
 
-    public List<Ride> getAllRides(){
-        return rideRepository.findAll();
+    @Autowired
+    private AnalyticsService analyticsService;
+
+    public List<RideWrapper> getAllRides(){
+        List<Ride> rides= rideRepository.findAll();
+        List<RideWrapper> rideWrappers = new ArrayList<>();
+        for(Ride ride:rides){
+            rideWrappers.add(new RideWrapper(ride));
+        }
+        return rideWrappers;
     }
 
     public List<RideWrapper> getAllRidesOfDriver(User driver){
@@ -45,10 +57,11 @@ public class RideService {
 
     public List<SearchResponse> getPrefferedRides(User user, SearchRequest searchRequest){
         List<Ride> rides = rideRepository.findAllByStatus(RideStatus.OPEN);
+
         List<SearchResponse> searchResponses = new ArrayList<>();
         for(Ride ride:rides){
             RouteMatchResult routeMatchResult = routeComparisonUtil.compareRoute(ride.getRoute(),
-                                                                            searchRequest.getPrefferedRoute(),
+                                                                            searchRequest.getPreferredRoute(),
                     searchRequest.getPickup(), searchRequest.getDrop(), ride.getPreferences(), user.getPreferences());
             if(routeMatchResult.getScore()!=0) {
                 BookingRequest bookingRequest = checkAndGetRequest(ride, user);
@@ -73,8 +86,11 @@ public class RideService {
         ride.setVehicle(rideDto.getVehicle());
         ride.setPreferences(rideDto.getPreferences());
         ride.setStatus(RideStatus.valueOf("OPEN"));
+        ride.setCreatedAt(LocalDateTime.now());
+
 
         rideRepository.save(ride);
+        analyticsService.incRides(user.getEmail(), rideDto.getCity());
         return ride;
     }
 
@@ -83,5 +99,28 @@ public class RideService {
             return bookingRequestRepository.findByRideAndRider(ride,rider);
         }
         return null;
+    }
+
+    public Ride closeRide(ObjectId id){
+        Ride ride = rideRepository.findById(id).orElse(null);
+        if(ride!=null) {
+            ride.setStatus(RideStatus.CLOSED);
+            ride.setCompletedAt(LocalDateTime.now());
+            rideRepository.save(ride);
+        }
+        return ride;
+    }
+
+    public void deleteRide(ObjectId id){
+        try {
+            Ride ride=rideRepository.findById(id).orElse(null);
+            if(ride==null) return;
+
+            List<BookingRequest> bookingRequests = bookingRequestRepository.findAllByRide(ride);
+            for(BookingRequest bookingRequest:bookingRequests) bookingRequestRepository.delete(bookingRequest);
+            rideRepository.deleteById(id);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 }

@@ -5,13 +5,23 @@ import com.example.carpooling.dto.UserProfileDto;
 import com.example.carpooling.entities.User;
 import com.example.carpooling.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private RedisService redisService;
+
+    @Autowired
+    private AnalyticsService analyticsService;
 
     public boolean isUserExists(String email){
         return userRepository.existsByEmail(email);
@@ -21,13 +31,32 @@ public class UserService {
         return userRepository.findByEmail(email);
     }
 
+    public List<UserProfileDto> getAllUsers(){
+        List<User> users = userRepository.findAll();
+        List<UserProfileDto> userProfileDtos = new ArrayList<>();
+        for (User user:users) userProfileDtos.add(mapToDto(user));
+        return userProfileDtos;
+    }
+
     public void addUser(User user){
         userRepository.save(user);
+        analyticsService.incUsers();
     }
 
     public UserProfileDto getUserProfile(String email) {
+        String key = "user:"+email+":profile";
+
+        UserProfileDto cachedProfile = redisService.get(key,UserProfileDto.class);
+        if (cachedProfile != null) {
+//            System.out.println("cache hit for profile");
+            return cachedProfile;
+        }
+//        System.out.println("cache miss for profile");
+
         User user = userRepository.findByEmail(email);
-        return mapToDto(user);
+        UserProfileDto userProfileDto= mapToDto(user);
+        redisService.set(key,userProfileDto,300l);
+        return userProfileDto;
     }
 
     public UserProfileDto updateUserProfile(String email, UserProfileDto dto) {
@@ -53,6 +82,8 @@ public class UserService {
         dto.setPreferences(user.getPreferences());
         dto.setEmergencyEmail(user.getEmergencyEmail());
         dto.setProfileImageBase64(user.getProfileImageBase64());
+        dto.setRating(user.getRating());
+        dto.setRating_count(user.getRating_count());
         return dto;
     }
 

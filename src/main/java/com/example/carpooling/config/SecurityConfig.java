@@ -1,4 +1,4 @@
-package com.example.carpooling.security;
+package com.example.carpooling.config;
 
 import com.example.carpooling.filters.JwtFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +34,10 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/public/**", "/auth/**").permitAll()
+                        .requestMatchers("/public/**",
+                                        "/auth/**",
+                                        "/swagger-ui/**",
+                                        "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
