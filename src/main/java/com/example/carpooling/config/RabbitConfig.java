@@ -17,6 +17,11 @@ public class RabbitConfig {
     }
 
     @Bean
+    public Queue emaildlq() {
+        return new Queue("email-dlq", true);
+    }
+
+    @Bean
     public MessageConverter jsonMessageConverter() {
         return new Jackson2JsonMessageConverter();
     }
