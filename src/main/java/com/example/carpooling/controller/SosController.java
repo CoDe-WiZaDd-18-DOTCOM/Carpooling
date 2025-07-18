@@ -1,8 +1,10 @@
 package com.example.carpooling.controller;
 
+import com.example.carpooling.dto.EmailDto;
 import com.example.carpooling.dto.SosAlertWrapper;
 import com.example.carpooling.dto.SosAuthorityMapper;
 import com.example.carpooling.entities.*;
+import com.example.carpooling.queues.producers.EmailProducer;
 import com.example.carpooling.services.*;
 import com.example.carpooling.utils.AuthUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,7 +27,7 @@ public class SosController {
 
     private static final Logger log = LoggerFactory.getLogger(SosController.class);
     @Autowired
-    private EmailService emailService;
+    private EmailProducer emailProducer;
 
     @Autowired
     private UserService userService;
@@ -95,7 +97,7 @@ public class SosController {
                     message
             );
 
-            emailService.sendEmergencyEmail(authorityEmail, subject, body);
+            emailProducer.sendEmail(new EmailDto(authorityEmail, subject, body));
 
             return ResponseEntity.ok("🚨 SOS alert sent successfully!");
         } catch (Exception e) {
@@ -200,7 +202,7 @@ public class SosController {
                     "\n\nin the following ride: " + bookingRequest.getPickup().getLabel() +
                     " -------> " + bookingRequest.getDestination().getLabel();
 
-            emailService.sendEmergencyEmail(to, subject, body);
+            emailProducer.sendEmail(new EmailDto(to, subject, body));
             return ResponseEntity.ok("Location shared successfully!");
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Failed to share location: " + e.getMessage());
