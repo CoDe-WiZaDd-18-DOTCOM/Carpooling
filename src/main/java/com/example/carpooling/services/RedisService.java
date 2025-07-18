@@ -23,6 +23,7 @@ public class RedisService {
             return objectMapper.readValue(o.toString(), entityClass);
         } catch (Exception e) {
             System.out.println("Exception "+ e);
+//            e.printStackTrace();
             return null;
         }
     }
