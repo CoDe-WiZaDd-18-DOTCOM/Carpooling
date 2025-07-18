@@ -6,15 +6,15 @@ The Carpooling System is a robust full-stack web application tailored for **univ
 
 ## Tech Stack
 
-| Layer | Technologies Used |
-| :-- | :-- |
-| **Frontend** | ReactJS, Tailwind CSS, Axios |
+| Layer | Technologies Used                                                 |
+| :-- |:------------------------------------------------------------------|
+| **Frontend** | ReactJS, Tailwind CSS, Axios                                      |
 | **Backend** | Spring Boot (Java), Spring Data MongoDB, <br>Spring Security, JWT |
-| **Database** | MongoDB (NoSQL) |
-| **Queue** | *Planned*: RabbitMQ (email/event dispatch) |
-| **Other APIs** | Nominatim (location search \& geolocation) |
-| **Auth** | JWT-based custom authentication |
-| **Hosting** | Localhost development; production-ready codebase |
+| **Database** | MongoDB (NoSQL)                                                   |
+| **Queue** |  RabbitMQ (email/event dispatch)                                  |
+| **Other APIs** | Nominatim (location search \& geolocation)                        |
+| **Auth** | JWT-based custom authentication                                   |
+| **Hosting** | Localhost development; production-ready codebase                  |
 
 ## User Roles
 
@@ -121,14 +121,17 @@ public class RouteStop {
 
 ### 8. Data Models (MongoDB)
 
-| Collection        | Purpose |
-|:------------------| :-- |
-| `user`            | JWT-authenticated users |
-| `rides`           | Rides offered (driver) |
-| `bookings`        | Booking requests |
-| `reviews`         | User ratings, comments |
-| `sos_alerts`      | Emergency alerts/messages |
-| `sos_authorities` | Authority info per city |
+| Collection           | Purpose |
+|:---------------------|:--------|
+| `user`               | JWT-authenticated users |
+| `rides`              | Rides offered (driver) |
+| `bookings`           | Booking requests |
+| `reviews`            | User ratings, comments |
+| `sos_alerts`         | Emergency alerts/messages |
+| `sos_authorities`    | Authority info per city |
+| `failed_emails`      | Logs of email send failures with retry tracking |
+| `banned_list`        | List of banned users by admin |
+| `analytical_summary` | Aggregated stats and insights (e.g., rides count, user activity) |
 
 ### 9. Pagination \& Filtering *(Planned)*
 
@@ -199,6 +202,25 @@ public boolean isRideMatching(Ride ride, String pickup, String drop) {
 }
 ```
 
+## 🐇 RabbitMQ Setup and Email Retry Architecture
+
+### 🧱 Queues Used
+
+- **emailQueue**: Main queue to receive email sending jobs.
+- **emailQueue.dlq**: Dead Letter Queue where failed messages from `emailQueue` are routed.
+- **emailQueue.dlq.retry**: Retry queue to reattempt failed messages after TTL.
+
+
+### 🔁 Message Lifecycle
+
+1. ✅ Email job published to `emailQueue`
+2. 📧 Consumer listens to `emailQueue` and tries to send email
+3. ❌ On failure → message moved to `emailQueue.dlq` via `x-dead-letter-exchange`
+4. ⏱ TTL applied on `emailQueue.dlq` (2 minutes)
+5. 🔁 After TTL expires → message forwarded to `emailQueue.dlq.retry`
+6. 📬 Consumer retries sending email from `emailQueue.dlq.retry`
+7. ❌ If fails again → saved to `failed_emails` MongoDB collection
+---
 
 ## Security Highlights
 
@@ -209,17 +231,31 @@ public boolean isRideMatching(Ride ride, String pickup, String drop) {
     - Booking requests: Passengers only
 - Auth headers required for all protected APIs
 
+## 🆕 Environment Setup (.env Required)
 
+```env
+MONGO_URI=your_mongodb_connection_string
+MONGO_URI_TEST=your_test_db_connection_string
+SECRET_KEY=your_jwt_secret_key
+EMAIL=your_email_address
+PASSWORD=your_email_password_or_app_password
+REDIS_HOST=your_redis_host
+REDIS_PORT=your_redis_port
+REDIS_PASSWORD=your_redis_password
+GOOGLE_CLIENT_ID=your_google_oauth_client_id
+GOOGLE_CLIENT_SECRET=your_google_oauth_client_secret
+RABBITMQ_URI=your_amqp_uri_with_credentials
+```
+---
 ## Future Features (Ideas \& Roadmap)
 
-- RabbitMQ for asynchronous notifications
 - Full-featured pagination, filtering, sorting
 - Notification system (email/SMS)
 - OTP verification for bookings
 - Smart route matching (ML) for optimal ride pooling
 - Improved ride/review history visibility
 
-
+---
 ## Summary
 
 This Carpooling System is a **modular, scalable ride-sharing platform** featuring:
