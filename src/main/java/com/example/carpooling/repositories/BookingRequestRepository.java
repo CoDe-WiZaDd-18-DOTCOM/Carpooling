@@ -4,6 +4,8 @@ import com.example.carpooling.entities.BookingRequest;
 import com.example.carpooling.entities.Ride;
 import com.example.carpooling.entities.User;
 import org.bson.types.ObjectId;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 

@@ -133,12 +133,12 @@ public class RouteStop {
 | `banned_list`        | List of banned users by admin |
 | `analytical_summary` | Aggregated stats and insights (e.g., rides count, user activity) |
 
-### 9. Pagination \& Filtering *(Planned)*
+### 9. Pagination \& Filtering
 
-- Pagination and filters for ride listings and booking history (`Pageable` in Spring Boot, query params in frontend).
+- Pagination and filters for rides and users listings (`Pageable` in Spring Boot, query params in frontend).
 
 
-### 10. Email Notification *(Planned)*
+### 10. Email Notification 
 
 - RabbitMQ to decouple email notifications (e.g., on SOS event)
 - `EmailEvent` published to a queue; async consumer dispatches the email
@@ -182,25 +182,6 @@ Represents a booking made by a user.
 - `LocalTime requestedTime`: Time the user wishes to be picked up.
 
 ---
-
-### ✅ Matching Logic
-
-This function ensures the pickup and drop exist in the ride’s route and occur in the correct order (pickup before drop).
-
-```java
-public boolean isRideMatching(Ride ride, String pickup, String drop) {
-    List<RouteStop> route = ride.getRoute();
-    int pickupIndex = -1, dropIndex = -1;
-
-    for (int i = 0; i < route.size(); i++) {
-        String loc = route.get(i).getLocation();
-        if (loc.equalsIgnoreCase(pickup)) pickupIndex = i;
-        if (loc.equalsIgnoreCase(drop)) dropIndex = i;
-    }
-
-    return pickupIndex != -1 && dropIndex != -1 && pickupIndex < dropIndex;
-}
-```
 
 ## 🐇 RabbitMQ Setup and Email Retry Architecture
 

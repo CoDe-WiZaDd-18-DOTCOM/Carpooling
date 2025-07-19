@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -72,19 +73,24 @@ public class UserController {
     }
 
     @Operation(
-            summary = "Get all users list",
-            description = "Returns all the users in db. Require admin role to access it."
+            summary = "Get paginated users list",
+            description = "Returns paginated users. Requires admin role."
     )
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/user-list")
-    public ResponseEntity<?> getUsersList() {
+    public ResponseEntity<?> getUsersList(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
         try {
-            return ResponseEntity.ok(userService.getAllUsers());
+            Page<UserProfileDto> paginatedUsers = userService.getPaginatedUsers(page, size);
+            return ResponseEntity.ok(paginatedUsers);
         } catch (Exception e) {
             logger.error(e.getMessage());
-            return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 
 
     @Operation(summary = "promote user", description = "promote user from user to admin")
