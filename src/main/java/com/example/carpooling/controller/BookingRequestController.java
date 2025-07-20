@@ -71,14 +71,18 @@ public class BookingRequestController {
 
     @Operation(summary = "Get bookings by current user", description = "Returns all ride bookings made by the authenticated user (rider).")
     @GetMapping("/me")
-    public ResponseEntity<List<BookingWrapper>> getRiderBookings() {
+    public ResponseEntity<Page<BookingWrapper>> getRiderBookings(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
         try {
             User rider = userService.getUser(authUtil.getEmail());
-            return new ResponseEntity<>(bookingRequestService.getUserRides(rider), HttpStatus.OK);
+            return new ResponseEntity<>(bookingRequestService.getUserRides(rider, page, size), HttpStatus.OK);
         } catch (Exception e) {
+            log.error(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
 
     @Operation(summary = "Get incoming booking requests", description = "Returns all pending booking requests for rides owned by the current user (driver). Requires DRIVER role.")
     @PreAuthorize("hasRole('DRIVER')")

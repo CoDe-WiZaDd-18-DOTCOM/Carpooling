@@ -46,21 +46,14 @@ public class BookingRequestService {
         return bookingWrappers;
     }
 
-    public List<BookingWrapper> getUserRides(User rider) {
-        List<BookingRequest> bookingRequests = bookingRequestRepository.findAllByRider(rider);
 
-        List<BookingRequest> sortedRequests = bookingRequests.stream()
-                .filter(br -> br.getRide() != null && br.getRide().getRoute() != null && !br.getRide().getRoute().isEmpty())
-                .sorted(Comparator.comparing(br -> br.getRide().getRoute().get(0).getArrivalTime()))
-                .toList();
-
-        List<BookingWrapper> bookingWrappers = new ArrayList<>();
-        for (BookingRequest request : sortedRequests) {
-            bookingWrappers.add(new BookingWrapper(request));
-        }
-
-        return bookingWrappers;
+    public Page<BookingWrapper> getUserRides(User rider, int page, int size) {
+        Sort sort = Sort.by("pickup.arrivalTime").ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<BookingRequest> bookingPage = bookingRequestRepository.findAllByRider(rider, pageable);
+        return bookingPage.map(BookingWrapper::new);
     }
+
 
 
     public BookingRequest addRequest(SearchRequest searchRequest,Ride ride, User rider){

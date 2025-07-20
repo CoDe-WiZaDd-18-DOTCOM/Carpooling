@@ -13,7 +13,8 @@ import java.util.List;
 
 @Repository
 public interface BookingRequestRepository extends MongoRepository<BookingRequest, ObjectId> {
-    List<BookingRequest> findAllByRider(User rider);
+    Page<BookingRequest> findAllByRider(User rider, Pageable pageable);
+
     List<BookingRequest> findAllByDriver(User driver);
     List<BookingRequest> findAllByRide(Ride ride);
 
