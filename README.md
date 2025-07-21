@@ -157,6 +157,17 @@ public class Location {
     private double longitude;
 }
 ```
+### 12. Optimistic Locking \& Versioning (Ride Entity)
+
+- The `Ride` entity uses an automatic `@Version` field for optimistic locking, managed by Spring Data MongoDB.
+- On every update, the frontend must include the current `version` it received when loading the ride.
+- Spring Data checks the version during save:
+  - If it matches, the update goes through and the version is incremented automatically.
+  - If it doesn't match (someone else updated the ride), the API returns a 409 Conflict error.
+- On ride creation, omit the `version`; it is set to `0` by the database.
+- Show users a clear message when a version conflict occurs, prompting them to reload and retry.
+- This ensures multi-user safety and prevents accidental overwrites or "lost updates."
+---
 
 ## 🧠 Ride Matching Algorithm
 
@@ -230,9 +241,9 @@ RABBITMQ_URI=your_amqp_uri_with_credentials
 ---
 ## Future Features (Ideas \& Roadmap)
 
-- Full-featured pagination, filtering, sorting
-- Notification system (email/SMS)
-- OTP verification for bookings
+- Integrating chatbot which guides the new users.
+- Notification system (SMS)
+- OTP verification for bookings and login verifications
 - Smart route matching (ML) for optimal ride pooling
 - Improved ride/review history visibility
 
