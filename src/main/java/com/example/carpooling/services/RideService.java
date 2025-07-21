@@ -11,7 +11,11 @@ import com.example.carpooling.repositories.RideRepository;
 import com.example.carpooling.utils.RouteComparisonUtil;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -44,11 +48,10 @@ public class RideService {
         return rideWrappers;
     }
 
-    public List<RideWrapper> getAllRidesOfDriver(User driver){
-        List<Ride> rides=rideRepository.findAllByDriver(driver);
-        List<RideWrapper> rideWrappers = new ArrayList<>();
-        for(Ride ride:rides) rideWrappers.add(new RideWrapper(ride));
-        return rideWrappers;
+    public Page<RideWrapper> getAllRidesOfDriver(User driver, int page, int size){
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Ride> ridesPage = rideRepository.findAllByDriver(driver, pageable);
+        return ridesPage.map(RideWrapper::new);
     }
 
     public Ride getRide(ObjectId id){
@@ -110,6 +113,22 @@ public class RideService {
         }
         return ride;
     }
+
+    public Ride updateRide(String rideId, UpdateRideDto dto, String requesterEmail) {
+        ObjectId objectId= new ObjectId(rideId);
+
+        Ride ride = rideRepository.findById(objectId).orElse(null);
+        if(ride==null) return null;
+        ride.setRoute(dto.getRoute());
+        ride.setSeatCapacity(dto.getSeatCapacity());
+        ride.setAvailableSeats(dto.getAvailableSeats());
+        ride.setVehicle(dto.getVehicle());
+        ride.setPreferences(dto.getPreferences());
+        ride.setVersion(dto.getVersion());
+
+        return rideRepository.save(ride);
+    }
+
 
     public void deleteRide(ObjectId id){
         try {

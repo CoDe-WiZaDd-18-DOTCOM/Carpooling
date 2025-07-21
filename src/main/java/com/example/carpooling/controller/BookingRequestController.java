@@ -14,7 +14,10 @@ import com.example.carpooling.utils.AuthUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,6 +30,7 @@ import java.util.List;
 @Tag(name = "Bookings", description = "Endpoints for managing ride booking requests between riders and drivers.")
 public class BookingRequestController {
 
+    private static final Logger log = LoggerFactory.getLogger(BookingRequestController.class);
     @Autowired
     private BookingRequestService bookingRequestService;
 
@@ -67,14 +71,18 @@ public class BookingRequestController {
 
     @Operation(summary = "Get bookings by current user", description = "Returns all ride bookings made by the authenticated user (rider).")
     @GetMapping("/me")
-    public ResponseEntity<List<BookingWrapper>> getRiderBookings() {
+    public ResponseEntity<Page<BookingWrapper>> getRiderBookings(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
         try {
             User rider = userService.getUser(authUtil.getEmail());
-            return new ResponseEntity<>(bookingRequestService.getUserRides(rider), HttpStatus.OK);
+            return new ResponseEntity<>(bookingRequestService.getUserRides(rider, page, size), HttpStatus.OK);
         } catch (Exception e) {
+            log.error(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
 
     @Operation(summary = "Get incoming booking requests", description = "Returns all pending booking requests for rides owned by the current user (driver). Requires DRIVER role.")
     @PreAuthorize("hasRole('DRIVER')")

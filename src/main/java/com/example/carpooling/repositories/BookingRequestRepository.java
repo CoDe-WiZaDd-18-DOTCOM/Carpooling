@@ -4,6 +4,8 @@ import com.example.carpooling.entities.BookingRequest;
 import com.example.carpooling.entities.Ride;
 import com.example.carpooling.entities.User;
 import org.bson.types.ObjectId;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,7 +13,8 @@ import java.util.List;
 
 @Repository
 public interface BookingRequestRepository extends MongoRepository<BookingRequest, ObjectId> {
-    List<BookingRequest> findAllByRider(User rider);
+    Page<BookingRequest> findAllByRider(User rider, Pageable pageable);
+
     List<BookingRequest> findAllByDriver(User driver);
     List<BookingRequest> findAllByRide(Ride ride);
 

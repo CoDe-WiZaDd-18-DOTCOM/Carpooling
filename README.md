@@ -133,12 +133,12 @@ public class RouteStop {
 | `banned_list`        | List of banned users by admin |
 | `analytical_summary` | Aggregated stats and insights (e.g., rides count, user activity) |
 
-### 9. Pagination \& Filtering *(Planned)*
+### 9. Pagination \& Filtering
 
-- Pagination and filters for ride listings and booking history (`Pageable` in Spring Boot, query params in frontend).
+- Pagination and filters for rides and users listings (`Pageable` in Spring Boot, query params in frontend).
 
 
-### 10. Email Notification *(Planned)*
+### 10. Email Notification 
 
 - RabbitMQ to decouple email notifications (e.g., on SOS event)
 - `EmailEvent` published to a queue; async consumer dispatches the email
@@ -157,6 +157,17 @@ public class Location {
     private double longitude;
 }
 ```
+### 12. Optimistic Locking \& Versioning (Ride Entity)
+
+- The `Ride` entity uses an automatic `@Version` field for optimistic locking, managed by Spring Data MongoDB.
+- On every update, the frontend must include the current `version` it received when loading the ride.
+- Spring Data checks the version during save:
+  - If it matches, the update goes through and the version is incremented automatically.
+  - If it doesn't match (someone else updated the ride), the API returns a 409 Conflict error.
+- On ride creation, omit the `version`; it is set to `0` by the database.
+- Show users a clear message when a version conflict occurs, prompting them to reload and retry.
+- This ensures multi-user safety and prevents accidental overwrites or "lost updates."
+---
 
 ## 🧠 Ride Matching Algorithm
 
@@ -182,25 +193,6 @@ Represents a booking made by a user.
 - `LocalTime requestedTime`: Time the user wishes to be picked up.
 
 ---
-
-### ✅ Matching Logic
-
-This function ensures the pickup and drop exist in the ride’s route and occur in the correct order (pickup before drop).
-
-```java
-public boolean isRideMatching(Ride ride, String pickup, String drop) {
-    List<RouteStop> route = ride.getRoute();
-    int pickupIndex = -1, dropIndex = -1;
-
-    for (int i = 0; i < route.size(); i++) {
-        String loc = route.get(i).getLocation();
-        if (loc.equalsIgnoreCase(pickup)) pickupIndex = i;
-        if (loc.equalsIgnoreCase(drop)) dropIndex = i;
-    }
-
-    return pickupIndex != -1 && dropIndex != -1 && pickupIndex < dropIndex;
-}
-```
 
 ## 🐇 RabbitMQ Setup and Email Retry Architecture
 
@@ -249,9 +241,9 @@ RABBITMQ_URI=your_amqp_uri_with_credentials
 ---
 ## Future Features (Ideas \& Roadmap)
 
-- Full-featured pagination, filtering, sorting
-- Notification system (email/SMS)
-- OTP verification for bookings
+- Integrating chatbot which guides the new users.
+- Notification system (SMS)
+- OTP verification for bookings and login verifications
 - Smart route matching (ML) for optimal ride pooling
 - Improved ride/review history visibility
 

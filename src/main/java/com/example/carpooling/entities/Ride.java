@@ -3,6 +3,7 @@ package com.example.carpooling.entities;
 import com.example.carpooling.enums.RideStatus;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -24,8 +25,6 @@ public class Ride {
     @DBRef
     private User driver;
 
-//    private RouteStop pickup;
-//    private RouteStop drop;
     private List<RouteStop> route;
 
     private int seatCapacity;
@@ -39,7 +38,17 @@ public class Ride {
     private LocalDateTime createdAt;
     private LocalDateTime completedAt;
 
+    @Version
+    private Long version;
 
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
+    }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
@@ -65,22 +74,6 @@ public class Ride {
         this.id = id;
     }
 
-
-//    public RouteStop getPickup() {
-//        return pickup;
-//    }
-//
-//    public void setPickup(RouteStop pickup) {
-//        this.pickup = pickup;
-//    }
-//
-//    public RouteStop getDrop() {
-//        return drop;
-//    }
-//
-//    public void setDrop(RouteStop drop) {
-//        this.drop = drop;
-//    }
 
     public List<RouteStop> getRoute() {
         return route;
