@@ -1,5 +1,7 @@
 package com.example.carpooling;
 
+import com.google.genai.Client;
+import com.google.genai.types.GenerateContentResponse;
 import io.github.cdimascio.dotenv.Dotenv;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +28,7 @@ public class CarpoolingApplication {
 		System.setProperty("GOOGLE_CLIENT_ID",dotenv.get("GOOGLE_CLIENT_ID"));
 		System.setProperty("GOOGLE_CLIENT_SECRET",dotenv.get("GOOGLE_CLIENT_SECRET"));
 		System.setProperty("RABBITMQ_URI",dotenv.get("RABBITMQ_URI"));
+		System.setProperty("GEMINI_API_KEY",dotenv.get("GEMINI_API_KEY"));
 
 		SpringApplication.run(CarpoolingApplication.class, args);
 	}
