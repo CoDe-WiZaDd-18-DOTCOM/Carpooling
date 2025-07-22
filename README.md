@@ -169,6 +169,19 @@ public class Location {
 - This ensures multi-user safety and prevents accidental overwrites or "lost updates."
 ---
 
+### 13. AI Chatbot Integration — How It Works
+- Backend Endpoint:
+- /public/chat-bot (Spring Boot REST API)
+
+- AI Model:
+- Gemini 2.5 Flash (powered via Google AI API)
+
+- Context-Driven Prompts:
+- Each user question is answered using a dedicated context file (ai-context.txt), providing responses that are accurate and specific to the project.
+
+- Efficient Caching:
+The project context is loaded once at application startup, allowing for fast and consistent access with each AI query.
+---
 ## 🧠 Ride Matching Algorithm
 
 This algorithm is responsible for determining whether a ride is a valid match for a user's booking request based on pickup and drop location order in the ride’s route, and optionally, the timing.
@@ -238,14 +251,6 @@ GOOGLE_CLIENT_ID=your_google_oauth_client_id
 GOOGLE_CLIENT_SECRET=your_google_oauth_client_secret
 RABBITMQ_URI=your_amqp_uri_with_credentials
 ```
----
-## Future Features (Ideas \& Roadmap)
-
-- Integrating chatbot which guides the new users.
-- Notification system (SMS)
-- OTP verification for bookings and login verifications
-- Smart route matching (ML) for optimal ride pooling
-- Improved ride/review history visibility
 
 ---
 ## Summary
