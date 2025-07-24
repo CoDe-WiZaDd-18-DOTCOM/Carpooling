@@ -27,5 +27,5 @@ WORKDIR /app
 COPY --from=build /app/target/carpooling-0.0.1-SNAPSHOT.jar app.jar
 
 # Use dynamic port
-EXPOSE 5002
+EXPOSE 5001
 ENTRYPOINT ["java", "-jar", "app.jar"]
