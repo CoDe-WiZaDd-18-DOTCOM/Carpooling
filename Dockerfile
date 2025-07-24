@@ -24,7 +24,7 @@ FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
 # Copy jar from builder stage
-COPY --from=build /app/target/formula-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=build /app/target/carpooling-0.0.1-SNAPSHOT.jar app.jar
 
 # Use dynamic port
 EXPOSE 5002
