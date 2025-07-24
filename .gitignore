@@ -39,4 +39,6 @@ build/
 logs/
 *.logs
 
+envi
+
 
