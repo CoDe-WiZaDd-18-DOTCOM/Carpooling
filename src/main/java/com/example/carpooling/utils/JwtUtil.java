@@ -33,18 +33,15 @@ public class JwtUtil {
 
     public String extractUsername(String token) {
         try {
-            String email = redisService.get(token, String.class);
-            if (email != null) {
-                log.info("✅ JWT Cache Hit: User Email - {}", email);
-                return email;
+            String id = redisService.get(token, String.class);
+            if (id != null) {
+                return id;
             }
 
-            log.info("🔍 JWT Cache Miss: Parsing token");
             Claims claims = extractAllClaims(token);
-            email = claims.getSubject();
-            redisService.set(token, email, 300L);
-            log.info("🧠 Extracted email from token: {}", email);
-            return email;
+            id = claims.getSubject();
+            redisService.set(token, id, 300L);
+            return id;
         } catch (Exception e) {
             log.error("❌ Error extracting username from JWT: {}", e.getMessage());
             return null;
@@ -55,7 +52,6 @@ public class JwtUtil {
         try {
             Claims claims = extractAllClaims(token);
             String role = claims.get("role", String.class);
-            log.info("🛡️ Extracted role from token: {}", role);
             return role;
         } catch (Exception e) {
             log.error("❌ Error extracting role from JWT: {}", e.getMessage());
@@ -66,7 +62,6 @@ public class JwtUtil {
     public Date extractExpiration(String token) {
         try {
             Date exp = extractAllClaims(token).getExpiration();
-            log.info("📆 Token expires at: {}", exp);
             return exp;
         } catch (Exception e) {
             log.error("❌ Error extracting expiration from JWT: {}", e.getMessage());
@@ -90,7 +85,6 @@ public class JwtUtil {
     private Boolean isTokenExpired(String token) {
         Date exp = extractExpiration(token);
         boolean expired = exp != null && exp.before(new Date());
-        log.info("🔎 Is token expired? {}", expired);
         return expired;
     }
 
@@ -98,7 +92,6 @@ public class JwtUtil {
         String token = createToken(new HashMap<>() {{
             put("role", role);
         }}, username);
-        log.info("🎟️ Generated token for user: {} with role: {}", username, role);
         return token;
     }
 

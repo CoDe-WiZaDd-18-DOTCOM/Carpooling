@@ -29,7 +29,7 @@ public class AnalyticsController {
     @GetMapping
     public ResponseEntity<?> getAnalytics() {
         try {
-            return new ResponseEntity<>(analyticsService.getAnalytics(), HttpStatus.OK);
+            return new ResponseEntity<>(analyticsService.get(), HttpStatus.OK);
         } catch (Exception e) {
             log.info(e.getMessage());
             return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);

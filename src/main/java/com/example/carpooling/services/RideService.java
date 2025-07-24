@@ -93,7 +93,7 @@ public class RideService {
 
 
         rideRepository.save(ride);
-        analyticsService.incRides(user.getEmail(), rideDto.getCity());
+        analyticsService.incRides(user.getId().toHexString(), rideDto.getCity());
         return ride;
     }
 
@@ -114,7 +114,7 @@ public class RideService {
         return ride;
     }
 
-    public Ride updateRide(String rideId, UpdateRideDto dto, String requesterEmail) {
+    public Ride updateRide(String rideId, UpdateRideDto dto) {
         ObjectId objectId= new ObjectId(rideId);
 
         Ride ride = rideRepository.findById(objectId).orElse(null);

@@ -37,8 +37,7 @@ public class UserController {
     )
     @GetMapping("/me")
     public ResponseEntity<UserProfileDto> getProfile() {
-        String email = authUtil.getEmail();
-        return new ResponseEntity<>(userService.getUserProfile(email), HttpStatus.OK);
+        return new ResponseEntity<>(userService.getUserProfile(authUtil.getId()), HttpStatus.OK);
     }
 
     @Operation(
@@ -47,8 +46,7 @@ public class UserController {
     )
     @PutMapping("/me")
     public ResponseEntity<UserProfileDto> updateProfile(@RequestBody UserProfileDto profileDto) {
-        String email = authUtil.getEmail();
-        return new ResponseEntity<>(userService.updateUserProfile(email, profileDto), HttpStatus.OK);
+        return new ResponseEntity<>(userService.updateUserProfile(authUtil.getId(), profileDto), HttpStatus.OK);
     }
 
     @Operation(
@@ -58,7 +56,7 @@ public class UserController {
     @PostMapping("/upload-picture")
     public ResponseEntity<String> uploadProfilePicture(@RequestParam("file") MultipartFile file) {
         try {
-            User user = userService.getUser(authUtil.getEmail());
+            User user = userService.getUserById(authUtil.getId());
 
             byte[] bytes = file.getBytes();
             String base64Image = Base64.getEncoder().encodeToString(bytes);

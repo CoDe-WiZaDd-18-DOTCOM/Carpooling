@@ -48,6 +48,7 @@ public class RideController {
             List<RideWrapper> rideWrappers = rideService.getAllRides();
             return new ResponseEntity<>(rideWrappers, HttpStatus.OK);
         } catch (Exception e) {
+            log.error(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
@@ -58,8 +59,7 @@ public class RideController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "4") int size) {
         try {
-            String email = authUtil.getEmail();
-            User driver = userService.getUser(email);
+            User driver = userService.getUserById(authUtil.getId());
             Page<RideWrapper> rides = rideService.getAllRidesOfDriver(driver, page, size);
             return ResponseEntity.ok(rides);
         } catch (Exception e) {
@@ -76,6 +76,7 @@ public class RideController {
             Ride ride = rideService.getRide(id);
             return new ResponseEntity<>(ride, HttpStatus.OK);
         } catch (Exception e) {
+            log.error(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
@@ -84,10 +85,10 @@ public class RideController {
     @PostMapping("/search")
     public ResponseEntity<List<SearchResponse>> getPrefferedRides(@RequestBody SearchRequest searchRequest) {
         try {
-            User user = userService.getUser(authUtil.getEmail());
+            User user = userService.getUserById(authUtil.getId());
             return new ResponseEntity<>(rideService.getPrefferedRides(user, searchRequest), HttpStatus.OK);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            log.error(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
@@ -97,10 +98,11 @@ public class RideController {
     @PreAuthorize("hasRole('DRIVER')")
     public ResponseEntity<Ride> saveRide(@RequestBody RideDto rideDto) {
         try {
-            User user = userService.getUser(authUtil.getEmail());
+            User user = userService.getUserById(authUtil.getId());
             Ride ride = rideService.addRide(rideDto, user);
             return new ResponseEntity<>(ride, HttpStatus.OK);
         } catch (Exception e) {
+            log.error(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
@@ -110,13 +112,13 @@ public class RideController {
     @PreAuthorize("hasRole('DRIVER') or hasRole('ADMIN')")
     public ResponseEntity<Ride> closeRide(@PathVariable ObjectId id) {
         try {
-            String email = authUtil.getEmail();
-            User user = userService.getUser(email);
+            User user = userService.getUserById(authUtil.getId());
             Ride ride = rideService.closeRide(id);
             if(user.getRole().equals(Role.ADMIN)) log.info("admin closed the ride:" +id.toHexString());
 
             return new ResponseEntity<>(ride, HttpStatus.OK);
         } catch (Exception e) {
+            log.error(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
@@ -126,7 +128,7 @@ public class RideController {
     @PreAuthorize("hasRole('DRIVER') or hasRole('ADMIN')")
     public ResponseEntity<?> updateRide(@PathVariable String rideId, @RequestBody UpdateRideDto updateDto) {
         try {
-            Ride updatedRide = rideService.updateRide(rideId, updateDto, authUtil.getEmail());
+            Ride updatedRide = rideService.updateRide(rideId, updateDto);
             return ResponseEntity.ok(updatedRide);
         } catch (OptimisticLockingFailureException e) {
             log.error(e.getMessage());
@@ -143,13 +145,13 @@ public class RideController {
     @PreAuthorize("hasRole('DRIVER') or hasRole('ADMIN')")
     public ResponseEntity<String> deleteRide(@PathVariable ObjectId id) {
         try {
-            String email = authUtil.getEmail();
-            User user = userService.getUser(email);
+            User user = userService.getUserById(authUtil.getId());
             rideService.deleteRide(id);
-            if(user.getRole().equals(Role.ADMIN)) log.info("admin deleted the ride:" +id.toHexString());
+            if(user.getRole().equals(Role.ADMIN)) log.info("admin deleted the ride:{}",id.toHexString());
 
             return new ResponseEntity<>("Deleted", HttpStatus.OK);
         } catch (Exception e) {
+            log.error(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }

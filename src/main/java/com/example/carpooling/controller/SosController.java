@@ -192,7 +192,7 @@ public class SosController {
     @PostMapping("/share-location/{id}")
     public ResponseEntity<String> shareLocation(@PathVariable ObjectId id, @RequestBody String location) {
         try {
-            User user = userService.getUser(authUtil.getEmail());
+            User user = userService.getUserById(authUtil.getId());
             BookingRequest bookingRequest = bookingRequestService.getBooking(id);
 
             String to = user.getEmergencyEmail();

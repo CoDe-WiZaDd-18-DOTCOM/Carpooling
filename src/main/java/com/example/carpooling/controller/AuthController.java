@@ -53,7 +53,7 @@ public class AuthController {
 
         AuthResponse authResponse = new AuthResponse();
         authResponse.setEmail(user.getEmail());
-        authResponse.setJwtToken(jwtUtil.generateToken(user.getEmail(), user.getRole().name()));
+        authResponse.setJwtToken(jwtUtil.generateToken(user.getId().toHexString(), user.getRole().name()));
         authResponse.setRole(user.getRole().name());
 
         return new ResponseEntity<>(authResponse, HttpStatus.OK);
@@ -75,7 +75,7 @@ public class AuthController {
 
         AuthResponse authResponse = new AuthResponse();
         authResponse.setEmail(user.getEmail());
-        authResponse.setJwtToken(jwtUtil.generateToken(user.getEmail(),user.getRole().name()));
+        authResponse.setJwtToken(jwtUtil.generateToken(user.getId().toHexString(),user.getRole().name()));
         authResponse.setRole(user.getRole().name());
 
         return new ResponseEntity<>(authResponse, HttpStatus.OK);

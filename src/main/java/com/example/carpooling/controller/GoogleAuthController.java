@@ -74,10 +74,9 @@ public class GoogleAuthController {
                 Map<String, Object> userInfo = userInfoResponse.getBody();
                 String email = (String) userInfo.get("email");
 
-                try {
-                    userDetailsService.loadUserByUsername(email);
-                } catch (Exception e) {
-                    User user = new User();
+                User user = userRepository.findByEmail(email);
+                if(user==null){
+                    user = new User();
                     user.setEmail(email);
                     user.setPassword(passwordEncoder.encode(UUID.randomUUID().toString()));
                     user.setRole(Role.RIDER);
@@ -87,7 +86,20 @@ public class GoogleAuthController {
                     userRepository.save(user);
                 }
 
-                String jwtToken = jwtUtil.generateToken(email,Role.RIDER.name());
+//                try {
+//                    userDetailsService.loadUserByUsername(email);
+//                } catch (Exception e) {
+//                    User user = new User();
+//                    user.setEmail(email);
+//                    user.setPassword(passwordEncoder.encode(UUID.randomUUID().toString()));
+//                    user.setRole(Role.RIDER);
+//                    user.setRating(0);
+//                    user.setRating_count(0);
+//                    analyticsService.incUsers();
+//                    userRepository.save(user);
+//                }
+
+                String jwtToken = jwtUtil.generateToken(user.getId().toHexString(),Role.RIDER.name());
 
                 return ResponseEntity.status(302)
                         .header("Location", "http://localhost:5173/oauth-success?token=" + jwtToken)

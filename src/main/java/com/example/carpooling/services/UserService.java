@@ -4,6 +4,7 @@ import com.example.carpooling.dto.UpdateProfileRequest;
 import com.example.carpooling.dto.UserProfileDto;
 import com.example.carpooling.entities.User;
 import com.example.carpooling.repositories.UserRepository;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,10 @@ public class UserService {
 
     @Autowired
     private AnalyticsService analyticsService;
+
+    public User getUserById(String id){
+        return userRepository.findById(new ObjectId(id)).orElse(null);
+    }
 
     public boolean isUserExists(String email){
         return userRepository.existsByEmail(email);
@@ -55,8 +60,8 @@ public class UserService {
         analyticsService.incUsers();
     }
 
-    public UserProfileDto getUserProfile(String email) {
-        String key = "user:"+email+":profile";
+    public UserProfileDto getUserProfile(String id) {
+        String key = "user:"+id+":profile";
 
         UserProfileDto cachedProfile = redisService.get(key,UserProfileDto.class);
         if (cachedProfile != null) {
@@ -65,14 +70,14 @@ public class UserService {
         }
         System.out.println("cache miss for profile");
 
-        User user = userRepository.findByEmail(email);
+        User user = userRepository.findById(new ObjectId(id)).orElse(null);
         UserProfileDto userProfileDto= mapToDto(user);
         redisService.set(key,userProfileDto,300l);
         return userProfileDto;
     }
 
-    public UserProfileDto updateUserProfile(String email, UserProfileDto dto) {
-        User user = userRepository.findByEmail(email);
+    public UserProfileDto updateUserProfile(String id, UserProfileDto dto) {
+        User user = userRepository.findById(new ObjectId(id)).orElse(null);
 
         if (dto.getFirstName() != null) user.setFirstName(dto.getFirstName());
         if (dto.getLastName() != null) user.setLastName(dto.getLastName());

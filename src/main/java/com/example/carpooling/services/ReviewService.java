@@ -36,7 +36,7 @@ public class ReviewService {
         String bookingId=request.getBookingId();
 
         Review review = new Review();
-        review.setReviewer(authUtil.getEmail());
+        review.setReviewer(userRepository.findById(new ObjectId(authUtil.getId())).orElse(null).getEmail());
         review.setReviewee(request.getRevieweeEmail());
         review.setRating(request.getRating());
         review.setComment(request.getComment());

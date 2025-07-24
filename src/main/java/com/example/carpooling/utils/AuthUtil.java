@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class AuthUtil {
 
-    public String getEmail(){
+    public String getId(){
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 }

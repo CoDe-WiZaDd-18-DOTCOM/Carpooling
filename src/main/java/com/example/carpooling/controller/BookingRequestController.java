@@ -75,7 +75,7 @@ public class BookingRequestController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size) {
         try {
-            User rider = userService.getUser(authUtil.getEmail());
+            User rider = userService.getUserById(authUtil.getId());
             return new ResponseEntity<>(bookingRequestService.getUserRides(rider, page, size), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -89,7 +89,7 @@ public class BookingRequestController {
     @GetMapping("/incoming")
     public ResponseEntity<List<BookingWrapper>> getIncomingRequestsForDriver() {
         try {
-            User rider = userService.getUser(authUtil.getEmail());
+            User rider = userService.getUserById(authUtil.getId());
             return new ResponseEntity<>(bookingRequestService.getIncomingRequestsForDriver(rider), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -100,7 +100,7 @@ public class BookingRequestController {
     @PostMapping("/{id}/create-request")
     public ResponseEntity<BookingRequest> addRequest(@PathVariable ObjectId id, @RequestBody SearchRequest searchRequest) {
         try {
-            User rider = userService.getUser(authUtil.getEmail());
+            User rider = userService.getUserById(authUtil.getId());
             Ride ride = rideService.getRide(id);
 
             BookingRequest bookingRequest = bookingRequestService.addRequest(searchRequest, ride, rider);
@@ -117,7 +117,7 @@ public class BookingRequestController {
     public ResponseEntity<BookingRequest> approveRequest(@PathVariable ObjectId id) {
         try {
             BookingRequest booking = bookingRequestService.getBooking(id);
-            User user = userService.getUser(authUtil.getEmail());
+            User user = userService.getUserById(authUtil.getId());
 
             if (!booking.getDriver().getId().equals(user.getId())) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
@@ -138,7 +138,7 @@ public class BookingRequestController {
         try {
             BookingRequest booking = bookingRequestService.getBooking(id);
 
-            if (!booking.getRider().getEmail().equals(authUtil.getEmail()) || booking.isApproved()) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            if (!booking.getRider().getId().toHexString().equals(authUtil.getId()) || booking.isApproved()) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
             bookingRequestService.deleteRequest(id);
             return new ResponseEntity<>("deleted", HttpStatus.OK);
