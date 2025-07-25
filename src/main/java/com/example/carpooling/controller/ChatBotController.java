@@ -1,6 +1,5 @@
 package com.example.carpooling.controller;
 
-import com.example.carpooling.utils.ContextUtil;
 import com.google.genai.Client;
 import com.google.genai.types.GenerateContentResponse;
 import org.slf4j.Logger;
@@ -24,19 +23,20 @@ public class ChatBotController {
     @Value("${GEMINI_API_KEY}")
     private String apiKey;
 
-    private final ContextUtil contextUtil;
-
-    @Autowired
-    public ChatBotController(ContextUtil contextUtil) {
-        this.contextUtil = contextUtil;
-    }
 
 
     @PostMapping("/public/chat-bot")
     public ResponseEntity<?> test(@RequestBody String userQuestion){
         try {
             Client client = Client.builder().apiKey(apiKey).build();
-            String context = contextUtil.getContext();
+            String context = "The Carpooling System is a secure web platform for ride-sharing within a university " +
+                    "or city environment, allowing users to either offer or book rides. It supports live location sharing," +
+                    " emergency SOS alerts, and post-ride ratings and reviews. Users are assigned roles such as passenger, " +
+                    "driver, or admin, each with specific permissions. Passengers can search for rides, request bookings," +
+                    " and leave feedback, while drivers can create rides, manage bookings, and track routes. Admins oversee " +
+                    "all users, rides, and bookings through a dedicated dashboard. The system uses JWT authentication for " +
+                    "secure access and integrates services like RabbitMQ for notifications and Nominatim for geolocation.";
+
             GenerateContentResponse response =
                     client.models.generateContent(
                             "gemini-2.5-flash",
