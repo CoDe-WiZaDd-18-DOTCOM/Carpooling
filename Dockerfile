@@ -23,6 +23,10 @@ RUN ./mvnw clean package -DskipTests
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
+# Install CA certs so rediss:// works
+RUN apk add --no-cache ca-certificates \
+ && update-ca-certificates
+
 # Copy jar from builder stage
 COPY --from=build /app/target/carpooling-0.0.1-SNAPSHOT.jar app.jar
 
