@@ -26,7 +26,7 @@ public class RedisService {
             return objectMapper.readValue(o.toString(), entityClass);
         } catch (Exception e) {
             log.error(e.getMessage());
-            e.printStackTrace();
+//            e.printStackTrace();
             return null;
         }
     }
@@ -40,7 +40,7 @@ public class RedisService {
             return objectMapper.readValue(json.toString(), type);
         } catch (Exception e) {
             log.error(e.getMessage());
-            e.printStackTrace();
+//            e.printStackTrace();
             return null;
         }
     }
@@ -52,7 +52,7 @@ public class RedisService {
             redisTemplate.opsForValue().set(key, jsonValue, ttl, TimeUnit.SECONDS);
         } catch (Exception e) {
             log.error(e.getMessage());
-            e.printStackTrace();
+//            e.printStackTrace();
         }
     }
 
@@ -61,7 +61,7 @@ public class RedisService {
             redisTemplate.delete(key);
         } catch (Exception e) {
             log.error(e.getMessage());
-            e.printStackTrace();
+//            e.printStackTrace();
         }
     }
 
