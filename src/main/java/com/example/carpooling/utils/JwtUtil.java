@@ -84,7 +84,9 @@ public class JwtUtil {
 
     private Boolean isTokenExpired(String token) {
         Date exp = extractExpiration(token);
-        boolean expired = exp != null && exp.before(new Date());
+        if(exp==null) return true;
+        boolean expired = exp.before(new Date());
+        log.info("Token expiry check:{}",expired);
         return expired;
     }
 
