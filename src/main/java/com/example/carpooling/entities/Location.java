@@ -14,6 +14,12 @@ public class Location {
     private Double lat;
     private Double lon;
 
+    public Location(String label, Double lat, Double lon) {
+        this.label = label;
+        this.lat = lat;
+        this.lon = lon;
+    }
+
     public String getLabel() {
         return label;
     }

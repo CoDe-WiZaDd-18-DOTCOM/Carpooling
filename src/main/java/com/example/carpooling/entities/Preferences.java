@@ -11,6 +11,17 @@ public class Preferences {
     private PreferenceOption ac;
     private GenderPreference genderBased;
 
+    public Preferences() {
+    }
+
+    public Preferences(PreferenceOption music, PreferenceOption smoking, PreferenceOption petFriendly, PreferenceOption ac, GenderPreference genderBased) {
+        this.music = music;
+        this.smoking = smoking;
+        this.petFriendly = petFriendly;
+        this.ac = ac;
+        this.genderBased = genderBased;
+    }
+
     public PreferenceOption getMusic() {
         return music;
     }

@@ -15,6 +15,16 @@ public class Vehicle {
     private String color;
     private String brand;
 
+    public Vehicle() {
+    }
+
+    public Vehicle(String model, String licensePlate, String color, String brand) {
+        this.model = model;
+        this.licensePlate = licensePlate;
+        this.color = color;
+        this.brand = brand;
+    }
+
     public String getModel() {
         return model;
     }
