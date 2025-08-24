@@ -6,14 +6,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Service
 public class RedisService {
     private static final Logger log = LoggerFactory.getLogger(RedisService.class);
+    private static final String popularityKey = "popularity";
+
     @Autowired
     private RedisTemplate redisTemplate;
 
@@ -55,6 +61,31 @@ public class RedisService {
 //            e.printStackTrace();
         }
     }
+
+    public void incrementCityCount(String city) {
+        redisTemplate.opsForZSet().incrementScore(popularityKey, city, 1.0);
+    }
+
+    public List<String> getTop5Cities() {
+        String key = "city_popularity";
+
+        Set<ZSetOperations.TypedTuple<String>> topCitiesWithScores =
+                redisTemplate.opsForZSet().reverseRangeWithScores(key, 0, 4);
+
+        if (topCitiesWithScores == null) {
+            return Collections.emptyList();
+        }
+
+
+        return topCitiesWithScores.stream()
+                .map(ZSetOperations.TypedTuple::getValue)
+                .collect(Collectors.toList());
+    }
+
+    public Long getLength(){
+        return redisTemplate.opsForZSet().zCard(popularityKey);
+    }
+
 
     public void delete(String key) {
         try {
