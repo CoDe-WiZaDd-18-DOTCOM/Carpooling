@@ -38,6 +38,8 @@ public class Ride {
     private LocalDateTime createdAt;
     private LocalDateTime completedAt;
 
+    private String city;
+
     @Version
     private Long version;
 
@@ -131,5 +133,12 @@ public class Ride {
         this.status = status;
     }
 
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
 }
 

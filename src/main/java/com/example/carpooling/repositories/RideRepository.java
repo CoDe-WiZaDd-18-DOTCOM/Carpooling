@@ -15,6 +15,6 @@ import java.util.Optional;
 @Repository
 public interface RideRepository extends MongoRepository<Ride, ObjectId> {
     Page<Ride> findAllByDriver(User driver, Pageable pageable);
-    List<Ride> findAllByStatus(RideStatus rideStatus);
+    List<Ride> findAllByStatusAndCity(RideStatus rideStatus,String city);
     Optional<Ride> findById(ObjectId id);
 }

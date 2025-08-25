@@ -10,6 +10,8 @@ import com.example.carpooling.repositories.BookingRequestRepository;
 import com.example.carpooling.repositories.RideRepository;
 import com.example.carpooling.utils.RouteComparisonUtil;
 import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
@@ -20,10 +22,12 @@ import org.springframework.data.domain.Pageable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class RideService {
 
+    private static final Logger log = LoggerFactory.getLogger(RideService.class);
     @Autowired
     private RideRepository rideRepository;
 
@@ -59,8 +63,7 @@ public class RideService {
     }
 
     public List<SearchResponse> getPrefferedRides(User user, SearchRequest searchRequest){
-        List<Ride> rides = rideRepository.findAllByStatus(RideStatus.OPEN);
-
+        List<Ride> rides=getCachedRides(searchRequest.getCity());
         List<SearchResponse> searchResponses = new ArrayList<>();
         for(Ride ride:rides){
             RouteMatchResult routeMatchResult = routeComparisonUtil.compareRoute(ride.getRoute(),
@@ -80,6 +83,28 @@ public class RideService {
         return searchResponses;
     }
 
+    private List<Ride> getCachedRides(String city){
+        List<Ride> rides=redisService.getList(city,Ride.class);
+        redisService.incrementCityCount(city);
+
+        if(rides==null){
+            log.info("rides cache miss");
+            rides=rideRepository.findAllByStatusAndCity(RideStatus.OPEN,city);
+            Set<String> topCities=redisService.getTop5Cities();
+            if(topCities.size()<5 || topCities.contains(city)){
+                redisService.set(city, rides,300l);
+                log.info("current city rides are cached");
+            }
+
+            if(topCities.contains(city) && redisService.getLength()>5){
+                List<String> toRemove=redisService.getToRemoveCity();
+                redisService.delete(toRemove.get(0));
+                log.info("evicted the last lfu city cache");
+            }
+        }
+        return rides;
+    }
+
     public Ride addRide(RideDto rideDto,User user){
         Ride ride = new Ride();
         ride.setDriver(user);
@@ -90,6 +115,7 @@ public class RideService {
         ride.setPreferences(rideDto.getPreferences());
         ride.setStatus(RideStatus.valueOf("OPEN"));
         ride.setCreatedAt(LocalDateTime.now());
+        ride.setCity(rideDto.getCity());
 
 
         rideRepository.save(ride);
@@ -110,6 +136,7 @@ public class RideService {
             ride.setStatus(RideStatus.CLOSED);
             ride.setCompletedAt(LocalDateTime.now());
             rideRepository.save(ride);
+            redisService.delete(ride.getCity());
         }
         return ride;
     }
@@ -125,6 +152,7 @@ public class RideService {
         ride.setVehicle(dto.getVehicle());
         ride.setPreferences(dto.getPreferences());
         ride.setVersion(dto.getVersion());
+        redisService.delete(ride.getCity());
 
         return rideRepository.save(ride);
     }
@@ -137,6 +165,7 @@ public class RideService {
 
             List<BookingRequest> bookingRequests = bookingRequestRepository.findAllByRide(ride);
             for(BookingRequest bookingRequest:bookingRequests) bookingRequestRepository.delete(bookingRequest);
+            redisService.delete(ride.getCity());
             rideRepository.deleteById(id);
         } catch (Exception e) {
             System.out.println(e.getMessage());

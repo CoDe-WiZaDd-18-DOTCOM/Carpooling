@@ -29,27 +29,29 @@ public class RedisService {
     public <T> T get(String key, Class<T> entityClass) {
         try {
             Object o = redisTemplate.opsForValue().get(key);
-            return objectMapper.readValue(o.toString(), entityClass);
+            if (o == null) return null;
+            String json = (o instanceof String) ? (String) o : objectMapper.writeValueAsString(o);
+            return objectMapper.readValue(json, entityClass);
         } catch (Exception e) {
             log.error(e.getMessage());
-//            e.printStackTrace();
             return null;
         }
     }
+
 
     public <T> List<T> getList(String key, Class<T> elementType) {
         try {
-            Object json = redisTemplate.opsForValue().get(key);
-            if (json==null) return null;
-
+            Object o = redisTemplate.opsForValue().get(key);
+            if (o == null) return null;
+            String json = (o instanceof String) ? (String) o : objectMapper.writeValueAsString(o);
             JavaType type = objectMapper.getTypeFactory().constructCollectionType(List.class, elementType);
-            return objectMapper.readValue(json.toString(), type);
+            return objectMapper.readValue(json, type);
         } catch (Exception e) {
             log.error(e.getMessage());
-//            e.printStackTrace();
             return null;
         }
     }
+
 
 
     public void set(String key, Object o, Long ttl) {
@@ -66,19 +68,33 @@ public class RedisService {
         redisTemplate.opsForZSet().incrementScore(popularityKey, city, 1.0);
     }
 
-    public List<String> getTop5Cities() {
-        String key = "city_popularity";
+    public Set<String> getTop5Cities() {
+//        delete(popularityKey);
+        Set<ZSetOperations.TypedTuple<Object>> topCitiesWithScores =
+                redisTemplate.opsForZSet().reverseRangeWithScores(popularityKey, 0, 4);
 
-        Set<ZSetOperations.TypedTuple<String>> topCitiesWithScores =
-                redisTemplate.opsForZSet().reverseRangeWithScores(key, 0, 4);
+        if (topCitiesWithScores == null || topCitiesWithScores.isEmpty()) {
+            return Collections.emptySet();
+        }
+
+        return topCitiesWithScores.stream()
+                .map(tuple -> tuple.getValue() != null ? tuple.getValue().toString() : null)
+                .filter(value -> value != null && !value.isEmpty())
+                .collect(Collectors.toSet());
+    }
+
+
+    public List<String> getToRemoveCity() {
+        Set<ZSetOperations.TypedTuple<Object>> topCitiesWithScores =
+                redisTemplate.opsForZSet().reverseRangeWithScores(popularityKey, 5, 5);
 
         if (topCitiesWithScores == null) {
             return Collections.emptyList();
         }
 
-
         return topCitiesWithScores.stream()
-                .map(ZSetOperations.TypedTuple::getValue)
+                .map(tuple -> tuple.getValue() != null ? tuple.getValue().toString() : null)
+                .filter(value -> value != null)
                 .collect(Collectors.toList());
     }
 

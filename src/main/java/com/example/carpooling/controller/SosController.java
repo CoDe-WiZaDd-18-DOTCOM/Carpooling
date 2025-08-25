@@ -148,6 +148,7 @@ public class SosController {
             SosAuthorities sosAuthorities = sosAuthoritiesService.addAuthority(sosAuthorityMapper);
             return new ResponseEntity<>(sosAuthorities, HttpStatus.OK);
         } catch (Exception e) {
+            log.error(e.getMessage());
             return new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
         }
     }
