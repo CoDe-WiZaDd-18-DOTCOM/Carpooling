@@ -43,27 +43,23 @@ public class RideService {
     @Autowired
     private AnalyticsService analyticsService;
 
-    public List<RideWrapper> getAllRides(){
-        List<Ride> rides= rideRepository.findAll();
-        List<RideWrapper> rideWrappers = new ArrayList<>();
-        for(Ride ride:rides){
-            rideWrappers.add(new RideWrapper(ride));
-        }
-        return rideWrappers;
+    public List<Ride> getAllRides(){
+        return rideRepository.findAll();
     }
 
-    public Page<RideWrapper> getAllRidesOfDriver(User driver, int page, int size){
+    public Page<Ride> getAllRidesOfDriver(User driver, int page, int size){
         Pageable pageable = PageRequest.of(page, size);
         Page<Ride> ridesPage = rideRepository.findAllByDriver(driver, pageable);
-        return ridesPage.map(RideWrapper::new);
+        return ridesPage;
     }
 
-    public Ride getRide(ObjectId id){
+    public Ride getRide(String id){
         return rideRepository.findById(id).orElse(null);
     }
 
     public List<SearchResponse> getPrefferedRides(User user, SearchRequest searchRequest){
         List<Ride> rides=getCachedRides(searchRequest.getCity());
+//        List<Ride> rides=rideRepository.findAllByStatusAndCity(RideStatus.OPEN,searchRequest.getCity());
         List<SearchResponse> searchResponses = new ArrayList<>();
         for(Ride ride:rides){
             RouteMatchResult routeMatchResult = routeComparisonUtil.compareRoute(ride.getRoute(),
@@ -92,7 +88,7 @@ public class RideService {
             rides=rideRepository.findAllByStatusAndCity(RideStatus.OPEN,city);
             Set<String> topCities=redisService.getTop5Cities();
             if(topCities.size()<5 || topCities.contains(city)){
-                redisService.set(city, rides,300l);
+                redisService.set(city, rides,300L);
                 log.info("current city rides are cached");
             }
 
@@ -130,7 +126,7 @@ public class RideService {
         return null;
     }
 
-    public Ride closeRide(ObjectId id){
+    public Ride closeRide(String id){
         Ride ride = rideRepository.findById(id).orElse(null);
         if(ride!=null) {
             ride.setStatus(RideStatus.CLOSED);
@@ -141,10 +137,8 @@ public class RideService {
         return ride;
     }
 
-    public Ride updateRide(String rideId, UpdateRideDto dto) {
-        ObjectId objectId= new ObjectId(rideId);
-
-        Ride ride = rideRepository.findById(objectId).orElse(null);
+    public Ride updateRide(String rideId, RideDto dto) {
+        Ride ride = rideRepository.findById(rideId).orElse(null);
         if(ride==null) return null;
         ride.setRoute(dto.getRoute());
         ride.setSeatCapacity(dto.getSeatCapacity());
@@ -158,7 +152,7 @@ public class RideService {
     }
 
 
-    public void deleteRide(ObjectId id){
+    public void deleteRide(String id){
         try {
             Ride ride=rideRepository.findById(id).orElse(null);
             if(ride==null) return;

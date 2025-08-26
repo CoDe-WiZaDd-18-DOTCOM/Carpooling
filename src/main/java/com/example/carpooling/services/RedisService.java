@@ -1,5 +1,7 @@
 package com.example.carpooling.services;
 
+import com.example.carpooling.entities.Ride;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -9,6 +11,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -29,29 +32,27 @@ public class RedisService {
     public <T> T get(String key, Class<T> entityClass) {
         try {
             Object o = redisTemplate.opsForValue().get(key);
-            if (o == null) return null;
-            String json = (o instanceof String) ? (String) o : objectMapper.writeValueAsString(o);
-            return objectMapper.readValue(json, entityClass);
+            return objectMapper.readValue(o.toString(), entityClass);
         } catch (Exception e) {
             log.error(e.getMessage());
+//            e.printStackTrace();
             return null;
         }
     }
-
 
     public <T> List<T> getList(String key, Class<T> elementType) {
         try {
-            Object o = redisTemplate.opsForValue().get(key);
-            if (o == null) return null;
-            String json = (o instanceof String) ? (String) o : objectMapper.writeValueAsString(o);
+            Object json = redisTemplate.opsForValue().get(key);
+            if (json==null) return null;
+
             JavaType type = objectMapper.getTypeFactory().constructCollectionType(List.class, elementType);
-            return objectMapper.readValue(json, type);
+            return objectMapper.readValue(json.toString(), type);
         } catch (Exception e) {
             log.error(e.getMessage());
+//            e.printStackTrace();
             return null;
         }
     }
-
 
 
     public void set(String key, Object o, Long ttl) {

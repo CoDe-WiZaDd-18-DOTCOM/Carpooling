@@ -17,6 +17,7 @@ public class RideDto {
     private Vehicle vehicle;
     private Preferences preferences;
     private String city;
+    private Long version;
 
 //    public RouteStop getPickup() {
 //        return pickup;
@@ -40,6 +41,14 @@ public class RideDto {
 
     public void setRoute(List<RouteStop> route) {
         this.route = route;
+    }
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
     }
 
     public int getSeatCapacity() {

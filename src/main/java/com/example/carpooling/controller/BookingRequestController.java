@@ -46,7 +46,7 @@ public class BookingRequestController {
 
     @Operation(summary = "Get booking by ID", description = "Returns a single booking request given its unique ID.")
     @GetMapping("/booking/{id}")
-    public ResponseEntity<BookingRequest> getBookingById(@PathVariable ObjectId id) {
+    public ResponseEntity<BookingRequest> getBookingById(@PathVariable String id) {
         try {
             BookingRequest bookingRequest = bookingRequestService.getBooking(id);
             if (bookingRequest == null) {
@@ -60,10 +60,9 @@ public class BookingRequestController {
 
     @Operation(summary = "Get bookings for a ride", description = "Returns all booking requests associated with a specific ride ID.")
     @GetMapping("/booking/by-ride/{id}")
-    public ResponseEntity<List<BookingWrapper>> getBookingByRide(@PathVariable ObjectId id) {
+    public ResponseEntity<List<BookingRequest>> getBookingByRide(@PathVariable String id) {
         try {
-            List<BookingWrapper> bookingWrapper = bookingRequestService.getBookingByRide(rideService.getRide(id));
-            return new ResponseEntity<>(bookingWrapper, HttpStatus.OK);
+            return new ResponseEntity<>(bookingRequestService.getBookingByRide(rideService.getRide(id)), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -71,7 +70,7 @@ public class BookingRequestController {
 
     @Operation(summary = "Get bookings by current user", description = "Returns all ride bookings made by the authenticated user (rider).")
     @GetMapping("/me")
-    public ResponseEntity<Page<BookingWrapper>> getRiderBookings(
+    public ResponseEntity<Page<BookingRequest>> getRiderBookings(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size) {
         try {
@@ -87,7 +86,7 @@ public class BookingRequestController {
     @Operation(summary = "Get incoming booking requests", description = "Returns all pending booking requests for rides owned by the current user (driver). Requires DRIVER role.")
     @PreAuthorize("hasRole('DRIVER')")
     @GetMapping("/incoming")
-    public ResponseEntity<List<BookingWrapper>> getIncomingRequestsForDriver() {
+    public ResponseEntity<List<BookingRequest>> getIncomingRequestsForDriver() {
         try {
             User rider = userService.getUserById(authUtil.getId());
             return new ResponseEntity<>(bookingRequestService.getIncomingRequestsForDriver(rider), HttpStatus.OK);
@@ -98,7 +97,7 @@ public class BookingRequestController {
 
     @Operation(summary = "Create a booking request for a ride", description = "Creates a new booking request from the authenticated user (rider) for a given ride ID using provided search parameters.")
     @PostMapping("/{id}/create-request")
-    public ResponseEntity<BookingRequest> addRequest(@PathVariable ObjectId id, @RequestBody SearchRequest searchRequest) {
+    public ResponseEntity<BookingRequest> addRequest(@PathVariable String id, @RequestBody SearchRequest searchRequest) {
         try {
             User rider = userService.getUserById(authUtil.getId());
             Ride ride = rideService.getRide(id);
@@ -114,7 +113,7 @@ public class BookingRequestController {
     @Operation(summary = "Approve a booking request", description = "Allows a driver to approve a booking request by ID. Requires DRIVER role and the driver must own the ride.")
     @PreAuthorize("hasRole('DRIVER')")
     @PostMapping("/{id}/approve")
-    public ResponseEntity<BookingRequest> approveRequest(@PathVariable ObjectId id) {
+    public ResponseEntity<BookingRequest> approveRequest(@PathVariable String id) {
         try {
             BookingRequest booking = bookingRequestService.getBooking(id);
             User user = userService.getUserById(authUtil.getId());
@@ -134,7 +133,7 @@ public class BookingRequestController {
 
     @Operation(summary = "Delete a booking request", description = "Allows a rider to delete a booking request by ID.Rider must own that booking request and it should not be accepted yet.")
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteRequest(@PathVariable ObjectId id) {
+    public ResponseEntity<String> deleteRequest(@PathVariable String id) {
         try {
             BookingRequest booking = bookingRequestService.getBooking(id);
 

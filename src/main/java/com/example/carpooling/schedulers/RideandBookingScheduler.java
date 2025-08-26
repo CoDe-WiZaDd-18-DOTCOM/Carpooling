@@ -25,10 +25,9 @@ public class RideandBookingScheduler {
     @Scheduled(cron = "0 0 2 * * ?")
     public void cleanup(){
         try {
-            List<RideWrapper> rides = rideService.getAllRides();
+            List<Ride> rides = rideService.getAllRides();
 
-            for(RideWrapper rideWrapper:rides){
-                Ride ride=rideWrapper.getRide();
+            for(Ride ride:rides){
                 if(ride.getCreatedAt().isBefore(LocalDateTime.now().minusDays(30))){
                     rideService.deleteRide(ride.getId());
                 }

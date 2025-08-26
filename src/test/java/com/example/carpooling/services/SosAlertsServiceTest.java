@@ -37,7 +37,7 @@ class SosAlertsServiceTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         bookingRequest = new BookingRequest();
-        bookingRequest.setId(new ObjectId());
+        bookingRequest.setId("");
     }
 
     @Test
@@ -58,15 +58,15 @@ class SosAlertsServiceTest {
     void getAlerts_ShouldReturnFromCache_WhenCached() {
         List<SosAlertWrapper> cachedList = new ArrayList<>();
         SosAlerts sosAlerts=new SosAlerts("Msg1", bookingRequest);
-        sosAlerts.setId(new ObjectId());
+        sosAlerts.setId("aa");
         cachedList.add(new SosAlertWrapper(sosAlerts));
 
         when(redisService.getList("sosAlerts", SosAlertWrapper.class)).thenReturn(cachedList);
 
-        List<SosAlertWrapper> result = sosAlertsService.getAlerts();
+        List<SosAlerts> result = sosAlertsService.getAlerts();
 
         assertEquals(1, result.size());
-        verify(redisService, times(1)).getList("sosAlerts", SosAlertWrapper.class);
+        verify(redisService, times(1)).getList("sosAlerts", SosAlerts.class);
         verify(sosAlertsRepository, never()).findAll();
     }
 
@@ -76,11 +76,11 @@ class SosAlertsServiceTest {
 
         List<SosAlerts> alertsFromRepo = new ArrayList<>();
         SosAlerts sosAlerts=new SosAlerts("Msg1", bookingRequest);
-        sosAlerts.setId(new ObjectId());
+        sosAlerts.setId("aa");
         alertsFromRepo.add(sosAlerts);
         when(sosAlertsRepository.findAll()).thenReturn(alertsFromRepo);
 
-        List<SosAlertWrapper> result = sosAlertsService.getAlerts();
+        List<SosAlerts> result = sosAlertsService.getAlerts();
 
         assertEquals(1, result.size());
         verify(redisService, times(1)).set(eq("sosAlerts"), anyList(), eq(3*60*60L));
@@ -90,7 +90,7 @@ class SosAlertsServiceTest {
     @Test
     void closeAlert_ShouldMarkAlertAsSolved_WhenAlertExists() {
         SosAlerts alert = new SosAlerts("Msg1", bookingRequest);
-        ObjectId alertId = new ObjectId();
+        String alertId = "aa";
         alert.setId(alertId);
 
         when(sosAlertsRepository.findById(alertId)).thenReturn(Optional.of(alert));
@@ -105,7 +105,7 @@ class SosAlertsServiceTest {
 
     @Test
     void closeAlert_ShouldDoNothing_WhenAlertNotFound() {
-        ObjectId alertId = new ObjectId();
+        String alertId = "aa";
         when(sosAlertsRepository.findById(alertId)).thenReturn(Optional.empty());
 
         sosAlertsService.closeAlert(alertId);

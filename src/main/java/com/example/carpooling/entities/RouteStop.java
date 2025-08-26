@@ -6,6 +6,14 @@ public class RouteStop {
     private Location location;
     private LocalTime arrivalTime;
 
+    public RouteStop() {
+    }
+
+    public RouteStop(Location location, LocalTime arrivalTime) {
+        this.location = location;
+        this.arrivalTime = arrivalTime;
+    }
+
     public Location getLocation() {
         return location;
     }

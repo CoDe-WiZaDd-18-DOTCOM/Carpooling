@@ -56,14 +56,14 @@ class BookingRequestServiceTest {
         rider.setFirstName("Rider");
 
         ride = new Ride();
-        ride.setId(new ObjectId());
+        ride.setId("aa");
         ride.setDriver(driver);
         ride.setAvailableSeats(2);
         ride.setSeatCapacity(2);
         ride.setStatus(RideStatus.OPEN);
 
         bookingRequest = new BookingRequest();
-        bookingRequest.setId(new ObjectId());
+        bookingRequest.setId("aa");
         bookingRequest.setRide(ride);
         bookingRequest.setDriver(driver);
         bookingRequest.setRider(rider);
@@ -84,7 +84,7 @@ class BookingRequestServiceTest {
     void getBooking_ShouldReturnNull_WhenNotExists() {
         when(bookingRequestRepository.findById(any())).thenReturn(Optional.empty());
 
-        BookingRequest result = bookingRequestService.getBooking(new ObjectId());
+        BookingRequest result = bookingRequestService.getBooking("aa");
 
         assertNull(result);
     }
@@ -93,10 +93,10 @@ class BookingRequestServiceTest {
     void getIncomingRequestsForDriver_ShouldReturnWrappedList() {
         when(bookingRequestRepository.findAllByDriver(driver)).thenReturn(List.of(bookingRequest));
 
-        List<BookingWrapper> wrappers = bookingRequestService.getIncomingRequestsForDriver(driver);
+        List<BookingRequest> wrappers = bookingRequestService.getIncomingRequestsForDriver(driver);
 
         assertEquals(1, wrappers.size());
-        assertEquals(driver.getId(), wrappers.get(0).getBookingRequest().getDriver().getId());
+        assertEquals(driver.getId(), bookingRequest.getDriver().getId());
     }
 
     @Test
@@ -145,10 +145,10 @@ class BookingRequestServiceTest {
     void getBookingByRide_ShouldReturnWrappedList() {
         when(bookingRequestRepository.findAllByRide(ride)).thenReturn(List.of(bookingRequest));
 
-        List<BookingWrapper> result = bookingRequestService.getBookingByRide(ride);
+        List<BookingRequest> result = bookingRequestService.getBookingByRide(ride);
 
         assertEquals(1, result.size());
-        assertEquals(ride.getId(), result.get(0).getBookingRequest().getRide().getId());
+        assertEquals(ride.getId(), result.get(0).getRide().getId());
     }
 
     @Test

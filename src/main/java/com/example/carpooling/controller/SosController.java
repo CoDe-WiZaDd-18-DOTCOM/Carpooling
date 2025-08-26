@@ -51,8 +51,7 @@ public class SosController {
     @PostMapping("/sos/alert/{id}")
     public ResponseEntity<String> sendSos(@PathVariable String id, @RequestBody String message) {
         try {
-            ObjectId newid = new ObjectId(id);
-            BookingRequest bookingRequest = bookingRequestService.getBooking(newid);
+            BookingRequest bookingRequest = bookingRequestService.getBooking(id);
             Ride ride = bookingRequest.getRide();
             User driver = ride.getDriver();
             User rider = bookingRequest.getRider();
@@ -60,7 +59,8 @@ public class SosController {
             sosAlertsService.addAlert(message, bookingRequest);
 
             String label = bookingRequest.getPickup().getLabel();
-            String authorityEmail = sosAuthoritiesService.getAuthority(label).getEmail();
+            SosAuthorities authority = sosAuthoritiesService.getAuthority(label);
+            String authorityEmail=authority==null?"jaswanthm811@gmail.com": authority.getEmail();
 
             String subject = "🚨 SOS Alert from CarpoolConnect!";
             String body = """
@@ -111,7 +111,7 @@ public class SosController {
             description = "Returns all SOS alerts raised by users, including their messages and linked bookings."
     )
     @GetMapping("/sos/alerts")
-    public ResponseEntity<List<SosAlertWrapper>> getAlerts() {
+    public ResponseEntity<List<SosAlerts>> getAlerts() {
         try {
             return new ResponseEntity<>(sosAlertsService.getAlerts(), HttpStatus.OK);
         } catch (Exception e) {
@@ -129,7 +129,7 @@ public class SosController {
     @PostMapping("/sos/close/{id}")
     public ResponseEntity<?> closeAlert(@PathVariable String id) {
         try {
-            sosAlertsService.closeAlert(new ObjectId(id));
+            sosAlertsService.closeAlert(id);
             return new ResponseEntity<>("closed", HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
@@ -191,7 +191,7 @@ public class SosController {
             description = "Allows a rider to send their live location during a ride to their emergency contact via email."
     )
     @PostMapping("/share-location/{id}")
-    public ResponseEntity<String> shareLocation(@PathVariable ObjectId id, @RequestBody String location) {
+    public ResponseEntity<String> shareLocation(@PathVariable String id, @RequestBody String location) {
         try {
             User user = userService.getUserById(authUtil.getId());
             BookingRequest bookingRequest = bookingRequestService.getBooking(id);

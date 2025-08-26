@@ -11,7 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class SosAlerts {
 
     @Id
-    private ObjectId id;
+    private String id;
 
     private String message;
 
@@ -27,6 +27,9 @@ public class SosAlerts {
         status=SosStatus.PENDING;
     }
 
+    public SosAlerts() {
+    }
+
     public SosStatus getStatus() {
         return status;
     }
@@ -35,11 +38,11 @@ public class SosAlerts {
         this.status = status;
     }
 
-    public ObjectId getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(ObjectId id) {
+    public void setId(String id) {
         this.id = id;
     }
 

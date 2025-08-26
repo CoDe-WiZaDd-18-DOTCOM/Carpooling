@@ -1,6 +1,10 @@
 package com.example.carpooling.entities;
 
+import com.example.carpooling.config.ObjectIdDeserializer;
+import com.example.carpooling.config.ObjectIdSerializer;
 import com.example.carpooling.enums.Role;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -13,6 +17,8 @@ import java.util.List;
 public class User {
 
     @Id
+    @JsonSerialize(using = ObjectIdSerializer.class)
+    @JsonDeserialize(using = ObjectIdDeserializer.class)
     private ObjectId id;
 
     private String firstName;
