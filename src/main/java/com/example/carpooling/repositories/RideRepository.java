@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface RideRepository extends MongoRepository<Ride, ObjectId> {
+public interface RideRepository extends MongoRepository<Ride, String> {
     Page<Ride> findAllByDriver(User driver, Pageable pageable);
-    List<Ride> findAllByStatus(RideStatus rideStatus);
-    Optional<Ride> findById(ObjectId id);
+    List<Ride> findAllByStatusAndCity(RideStatus rideStatus,String city);
+    Optional<Ride> findById(String id);
 }

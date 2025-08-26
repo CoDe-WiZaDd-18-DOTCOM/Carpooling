@@ -3,21 +3,21 @@ package com.example.carpooling.dto;
 import com.example.carpooling.entities.Ride;
 
 public class SearchResponse {
-    private RideSearchDto ride;
+    private Ride ride;
     private RouteMatchResult routeMatchResult;
     private String status;
 
     public SearchResponse(Ride ride,RouteMatchResult routeMatchResult,String status){
-        this.ride=new RideSearchDto(ride);
+        this.ride=ride;
         this.routeMatchResult=routeMatchResult;
         this.status=status;
     }
 
-    public RideSearchDto getRide() {
+    public Ride getRide() {
         return ride;
     }
 
-    public void setRide(RideSearchDto ride) {
+    public void setRide(Ride ride) {
         this.ride = ride;
     }
 
@@ -27,14 +27,6 @@ public class SearchResponse {
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public RideSearchDto getRideSearchDto() {
-        return ride;
-    }
-
-    public void setRideSearchDto(RideSearchDto rideSearchDto) {
-        this.ride = rideSearchDto;
     }
 
     public RouteMatchResult getRouteMatchResult() {

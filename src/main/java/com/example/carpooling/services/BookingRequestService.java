@@ -34,24 +34,20 @@ public class BookingRequestService {
     @Autowired
     private AnalyticsService analyticsService;
 
-    public BookingRequest getBooking(ObjectId id) {
+    public BookingRequest getBooking(String id) {
         return bookingRequestRepository.findById(id).orElse(null);
     }
 
-    public List<BookingWrapper> getIncomingRequestsForDriver(User driver){
-        List<BookingRequest> bookingRequests=bookingRequestRepository.findAllByDriver(driver);
-        List<BookingWrapper> bookingWrappers = new ArrayList<>();
-
-        for(BookingRequest bookingRequest:bookingRequests) bookingWrappers.add(new BookingWrapper(bookingRequest));
-        return bookingWrappers;
+    public List<BookingRequest> getIncomingRequestsForDriver(User driver){
+        return bookingRequestRepository.findAllByDriver(driver);
     }
 
 
-    public Page<BookingWrapper> getUserRides(User rider, int page, int size) {
+    public Page<BookingRequest> getUserRides(User rider, int page, int size) {
         Sort sort = Sort.by("pickup.arrivalTime").ascending();
         Pageable pageable = PageRequest.of(page, size, sort);
         Page<BookingRequest> bookingPage = bookingRequestRepository.findAllByRider(rider, pageable);
-        return bookingPage.map(BookingWrapper::new);
+        return bookingPage;
     }
 
 
@@ -93,14 +89,11 @@ public class BookingRequestService {
         return bookingRequest;
     }
 
-    public List<BookingWrapper> getBookingByRide(Ride ride){
-        List<BookingRequest> bookingRequests = bookingRequestRepository.findAllByRide(ride);
-        List<BookingWrapper> bookingWrappers = new ArrayList<>();
-        for(BookingRequest bookingRequest:bookingRequests) bookingWrappers.add(new BookingWrapper(bookingRequest));
-        return bookingWrappers;
+    public List<BookingRequest> getBookingByRide(Ride ride){
+        return bookingRequestRepository.findAllByRide(ride);
     }
 
-    public void deleteRequest(ObjectId id){
+    public void deleteRequest(String id){
         try {
             bookingRequestRepository.deleteById(id);
         } catch (Exception e) {

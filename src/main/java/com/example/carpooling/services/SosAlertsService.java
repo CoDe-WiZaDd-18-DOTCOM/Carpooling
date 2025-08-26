@@ -40,27 +40,21 @@ public class SosAlertsService {
         return sosAlerts;
     }
 
-    public List<SosAlertWrapper> getAlerts(){
-        logger.info("fetching sosAlerts");
-        logger.debug("debugged");
-        List<SosAlertWrapper> sosAlertWrappers = redisService.getList("sosAlerts",SosAlertWrapper.class);
-        if(sosAlertWrappers!=null){
+    public List<SosAlerts> getAlerts(){
+        List<SosAlerts> sosAlerts = redisService.getList("sosAlerts",SosAlerts.class);
+        if(sosAlerts!=null){
             System.out.println("cache hit on sosalerts");
-            return sosAlertWrappers;
+            return sosAlerts;
         }
 
-        List<SosAlerts> sosAlerts=sosAlertsRepository.findAll();
-        sosAlertWrappers=new ArrayList<>();
-        for(SosAlerts sosAlerts1:sosAlerts) {
-            sosAlertWrappers.add(new SosAlertWrapper(sosAlerts1));
-        }
+        sosAlerts=sosAlertsRepository.findAll();
 
-        redisService.set("sosAlerts",sosAlertWrappers,3*60*60l);
-        return sosAlertWrappers;
+        redisService.set("sosAlerts",sosAlerts,300L);
+        return sosAlerts;
     }
 
-    public void closeAlert(ObjectId objectId){
-        SosAlerts sosAlerts = sosAlertsRepository.findById(objectId).orElse(null);
+    public void closeAlert(String id){
+        SosAlerts sosAlerts = sosAlertsRepository.findById(id).orElse(null);
         if(sosAlerts==null) return;
         sosAlerts.setStatus(SosStatus.SOLVED);
         sosAlertsRepository.save(sosAlerts);

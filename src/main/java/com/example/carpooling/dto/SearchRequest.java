@@ -8,6 +8,7 @@ public class SearchRequest {
     private Location pickup;
     private Location drop;
     private List<Location> preferredRoute;
+    private String city;
 
     public Location getPickup() {
         return pickup;
@@ -31,5 +32,13 @@ public class SearchRequest {
 
     public void setPreferredRoute(List<Location> preferredRoute) {
         this.preferredRoute = preferredRoute;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
     }
 }

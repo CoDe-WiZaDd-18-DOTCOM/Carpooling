@@ -38,7 +38,7 @@ public class RouteComparisonUtil {
 
 
         if (preferredRoute==null || preferredRoute.isEmpty()) {
-            System.out.println("entered");
+//            System.out.println("entered");
             for (RouteStop stop : driverRoute) {
                 if(!pickupFound) pickupFound = GeoUtils.nearBy(pickupPoint.getLat(), pickupPoint.getLon(),
                         stop.getLocation().getLat(),stop.getLocation().getLon());
@@ -59,7 +59,7 @@ public class RouteComparisonUtil {
         }
         else {
             double totalCount = 0, matchedCount = 0;
-            System.out.println("entered_down");
+//            System.out.println("entered_down");
             preferredRoute.forEach(loc -> preferredSet.add(loc.getLabel()));
 
             for (RouteStop stop : driverRoute) {

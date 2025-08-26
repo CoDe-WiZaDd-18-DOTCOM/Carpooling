@@ -11,7 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class SosAuthorities {
 
     @Id
-    private ObjectId id;
+    private String id;
 
     @Indexed(unique = true)
     private String label;
@@ -23,11 +23,11 @@ public class SosAuthorities {
         this.email = email;
     }
 
-    public ObjectId getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(ObjectId id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -40,6 +40,7 @@ public class SosAuthorities {
     }
 
     public String getEmail() {
+        if(email==null) return "";
         return email;
     }
 

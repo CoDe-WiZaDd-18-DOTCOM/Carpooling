@@ -45,7 +45,7 @@ public class ReviewService {
         reviewRepository.save(review);
 
         if(bookingId!=null && !bookingId.isEmpty()){
-            BookingRequest bookingRequest = bookingRequestRepository.findById(new ObjectId(bookingId)).orElse(null);
+            BookingRequest bookingRequest = bookingRequestRepository.findById(bookingId).orElse(null);
             if(bookingRequest!=null){
                 bookingRequest.setRated(true);
                 bookingRequestRepository.save(bookingRequest);
@@ -64,7 +64,7 @@ public class ReviewService {
 //    }
 
     public boolean checkRated(String bookingId){
-        BookingRequest bookingRequest = bookingRequestRepository.findById(new ObjectId(bookingId)).orElse(null);
+        BookingRequest bookingRequest = bookingRequestRepository.findById(bookingId).orElse(null);
         if(bookingRequest!=null) return bookingRequest.isRated();
         return false;
     }

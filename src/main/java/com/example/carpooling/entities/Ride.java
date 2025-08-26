@@ -1,6 +1,11 @@
 package com.example.carpooling.entities;
 
+import com.example.carpooling.config.JacksonConfig;
+import com.example.carpooling.config.ObjectIdDeserializer;
+import com.example.carpooling.config.ObjectIdSerializer;
 import com.example.carpooling.enums.RideStatus;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Version;
@@ -10,6 +15,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Document(collection = "rides")
 //@Data
@@ -19,7 +25,7 @@ import java.util.List;
 public class Ride {
 
     @Id
-    private ObjectId id;
+    private String id;
 
     @Indexed
     @DBRef
@@ -37,6 +43,8 @@ public class Ride {
 
     private LocalDateTime createdAt;
     private LocalDateTime completedAt;
+
+    private String city;
 
     @Version
     private Long version;
@@ -66,14 +74,13 @@ public class Ride {
         this.completedAt = completedAt;
     }
 
-    public ObjectId getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(ObjectId id) {
+    public void setId(String id) {
         this.id = id;
     }
-
 
     public List<RouteStop> getRoute() {
         return route;
@@ -131,5 +138,12 @@ public class Ride {
         this.status = status;
     }
 
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
 }
 

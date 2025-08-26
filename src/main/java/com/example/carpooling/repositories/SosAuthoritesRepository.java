@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface SosAuthoritesRepository extends MongoRepository<SosAuthorities, ObjectId> {
+public interface SosAuthoritesRepository extends MongoRepository<SosAuthorities, String> {
     SosAuthorities findByLabel(String label);
 }

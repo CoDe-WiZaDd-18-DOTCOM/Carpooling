@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface BookingRequestRepository extends MongoRepository<BookingRequest, ObjectId> {
+public interface BookingRequestRepository extends MongoRepository<BookingRequest, String> {
     Page<BookingRequest> findAllByRider(User rider, Pageable pageable);
 
     List<BookingRequest> findAllByDriver(User driver);

@@ -21,7 +21,7 @@ import java.util.List;
 public class BookingRequest {
 
     @Id
-    private ObjectId id;
+    private String id;
 
     @DBRef
     private Ride ride;
@@ -60,11 +60,11 @@ public class BookingRequest {
         this.destination = destination;
     }
 
-    public ObjectId getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(ObjectId id) {
+    public void setId(String id) {
         this.id = id;
     }
 
