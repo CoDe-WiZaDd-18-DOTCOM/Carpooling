@@ -101,7 +101,7 @@ public class SosController {
 
             return ResponseEntity.ok("🚨 SOS alert sent successfully!");
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            log.error(e.getMessage());
             return ResponseEntity.status(500).body("Failed to send SOS: " + e.getMessage());
         }
     }
@@ -115,7 +115,7 @@ public class SosController {
         try {
             return new ResponseEntity<>(sosAlertsService.getAlerts(), HttpStatus.OK);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            log.error(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
@@ -132,6 +132,7 @@ public class SosController {
             sosAlertsService.closeAlert(id);
             return new ResponseEntity<>("closed", HttpStatus.OK);
         } catch (Exception e) {
+            log.error(e.getMessage());
             return new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
         }
     }
@@ -206,6 +207,7 @@ public class SosController {
             emailProducer.sendEmail(new EmailDto(to, subject, body));
             return ResponseEntity.ok("Location shared successfully!");
         } catch (Exception e) {
+            log.error(e.getMessage());
             return ResponseEntity.status(500).body("Failed to share location: " + e.getMessage());
         }
     }

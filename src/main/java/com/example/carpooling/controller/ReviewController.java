@@ -6,6 +6,8 @@ import com.example.carpooling.entities.Review;
 import com.example.carpooling.services.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,14 +20,20 @@ import java.util.Map;
 @RequestMapping("/reviews")
 public class ReviewController {
 
+    private static final Logger log = LoggerFactory.getLogger(ReviewController.class);
     @Autowired
     private ReviewService reviewService;
 
     @Operation(summary = "Submit a new review")
     @PostMapping("/submit")
     public ResponseEntity<Review> submitReview(@RequestBody ReviewDto request) {
-        Review review = reviewService.submitReview(request);
-        return ResponseEntity.ok(review);
+        try {
+            Review review = reviewService.submitReview(request);
+            return ResponseEntity.ok(review);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 //    @Operation(summary = "Get average rating for a user")
@@ -39,6 +47,11 @@ public class ReviewController {
     @Operation(summary = "checks weather the booking request is rated or not")
     @PostMapping("/check")
     public ResponseEntity<?> checkRated(@RequestBody String bookingId) {
-        return new ResponseEntity<>(reviewService.checkRated(bookingId), HttpStatus.OK);
+        try {
+            return new ResponseEntity<>(reviewService.checkRated(bookingId), HttpStatus.OK);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

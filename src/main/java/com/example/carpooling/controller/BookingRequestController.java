@@ -54,6 +54,7 @@ public class BookingRequestController {
             }
             return new ResponseEntity<>(bookingRequest, HttpStatus.OK);
         } catch (Exception e) {
+            log.error(e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -64,6 +65,7 @@ public class BookingRequestController {
         try {
             return new ResponseEntity<>(bookingRequestService.getBookingByRide(rideService.getRide(id)), HttpStatus.OK);
         } catch (Exception e) {
+            log.error(e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -91,6 +93,7 @@ public class BookingRequestController {
             User rider = userService.getUserById(authUtil.getId());
             return new ResponseEntity<>(bookingRequestService.getIncomingRequestsForDriver(rider), HttpStatus.OK);
         } catch (Exception e) {
+            log.error(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
@@ -106,6 +109,7 @@ public class BookingRequestController {
             return new ResponseEntity<>(bookingRequest, HttpStatus.OK);
 
         } catch (Exception e) {
+            log.error(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
@@ -126,7 +130,7 @@ public class BookingRequestController {
             return new ResponseEntity<>(bookingRequest, HttpStatus.OK);
 
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            log.error(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
@@ -142,6 +146,7 @@ public class BookingRequestController {
             bookingRequestService.deleteRequest(id);
             return new ResponseEntity<>("deleted", HttpStatus.OK);
         } catch (Exception e) {
+            log.error(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }

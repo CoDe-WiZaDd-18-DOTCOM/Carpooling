@@ -37,7 +37,12 @@ public class UserController {
     )
     @GetMapping("/me")
     public ResponseEntity<UserProfileDto> getProfile() {
-        return new ResponseEntity<>(userService.getUserProfile(authUtil.getId()), HttpStatus.OK);
+        try {
+            return new ResponseEntity<>(userService.getUserProfile(authUtil.getId()), HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Operation(
@@ -46,7 +51,12 @@ public class UserController {
     )
     @PutMapping("/me")
     public ResponseEntity<UserProfileDto> updateProfile(@RequestBody UserProfileDto profileDto) {
-        return new ResponseEntity<>(userService.updateUserProfile(authUtil.getId(), profileDto), HttpStatus.OK);
+        try {
+            return new ResponseEntity<>(userService.updateUserProfile(authUtil.getId(), profileDto), HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Operation(
@@ -66,6 +76,7 @@ public class UserController {
 
             return ResponseEntity.ok("Profile picture uploaded successfully.");
         } catch (Exception e) {
+            logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Upload failed: " + e.getMessage());
         }
     }

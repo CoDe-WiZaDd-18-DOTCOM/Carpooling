@@ -6,6 +6,8 @@ import com.example.carpooling.repositories.UserRepository;
 import com.example.carpooling.services.AnalyticsService;
 import com.example.carpooling.services.UserDetailsServiceImpl;
 import com.example.carpooling.utils.JwtUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -25,6 +27,7 @@ import java.util.UUID;
 @RequestMapping("/auth/google")
 public class GoogleAuthController {
 
+    private static final Logger log = LoggerFactory.getLogger(GoogleAuthController.class);
     @Value("${GOOGLE_CLIENT_ID}")
     private String clientId;
 
@@ -109,7 +112,7 @@ public class GoogleAuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User info fetch failed.");
 
         } catch (Exception e) {
-            System.out.println("Exception occurred while handleGoogleCallback " + e.getMessage());
+            log.error("Exception occurred while handleGoogleCallback " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
