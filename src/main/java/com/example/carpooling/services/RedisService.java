@@ -65,6 +65,14 @@ public class RedisService {
         }
     }
 
+    public Long incrCount(String key){
+        return redisTemplate.opsForValue().increment(key);
+    }
+
+    public void setExpiry(String key,Long ttl){
+        redisTemplate.opsForValue().getAndExpire(key,Duration.ofMinutes(ttl));
+    }
+
     public void incrementCityCount(String city) {
         redisTemplate.opsForZSet().incrementScore(popularityKey, city, 1.0);
     }

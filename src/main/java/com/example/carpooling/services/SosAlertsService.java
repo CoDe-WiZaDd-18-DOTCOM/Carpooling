@@ -43,7 +43,7 @@ public class SosAlertsService {
     public List<SosAlerts> getAlerts(){
         List<SosAlerts> sosAlerts = redisService.getList("sosAlerts",SosAlerts.class);
         if(sosAlerts!=null){
-            System.out.println("cache hit on sosalerts");
+//            System.out.println("cache hit on sosalerts");
             return sosAlerts;
         }
 

@@ -27,7 +27,7 @@ public class JwtUtil {
     private static final Logger log = LoggerFactory.getLogger(JwtUtil.class);
 
     private SecretKey getSigningKey() {
-        log.debug("Generating signing key from SECRET_KEY");
+//        log.debug("Generating signing key from SECRET_KEY");
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
     }
 
@@ -43,7 +43,7 @@ public class JwtUtil {
             redisService.set(token, id, 300L);
             return id;
         } catch (Exception e) {
-            log.error("❌ Error extracting username from JWT: {}", e.getMessage());
+//            log.error("❌ Error extracting username from JWT: {}", e.getMessage());
             return null;
         }
     }
@@ -54,7 +54,7 @@ public class JwtUtil {
             String role = claims.get("role", String.class);
             return role;
         } catch (Exception e) {
-            log.error("❌ Error extracting role from JWT: {}", e.getMessage());
+//            log.error("❌ Error extracting role from JWT: {}", e.getMessage());
             return null;
         }
     }
@@ -64,7 +64,7 @@ public class JwtUtil {
             Date exp = extractAllClaims(token).getExpiration();
             return exp;
         } catch (Exception e) {
-            log.error("❌ Error extracting expiration from JWT: {}", e.getMessage());
+//            log.error("❌ Error extracting expiration from JWT: {}", e.getMessage());
             return null;
         }
     }
@@ -77,7 +77,7 @@ public class JwtUtil {
                     .parseSignedClaims(token)
                     .getPayload();
         } catch (Exception e) {
-            log.error("❌ Error parsing JWT token: {}", e.getMessage());
+//            log.error("❌ Error parsing JWT token: {}", e.getMessage());
             throw e;
         }
     }
@@ -86,7 +86,7 @@ public class JwtUtil {
         Date exp = extractExpiration(token);
         if(exp==null) return true;
         boolean expired = exp.before(new Date());
-        log.info("Token expiry check:{}",expired);
+//        log.info("Token expiry check:{}",expired);
         return expired;
     }
 
@@ -111,7 +111,7 @@ public class JwtUtil {
 
     public Boolean validateToken(String token) {
         boolean valid = !isTokenExpired(token);
-        log.info("🔐 Is token valid? {}", valid);
+//        log.info("🔐 Is token valid? {}", valid);
         return valid;
     }
 }

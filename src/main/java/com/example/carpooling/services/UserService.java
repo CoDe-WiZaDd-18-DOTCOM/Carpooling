@@ -65,10 +65,10 @@ public class UserService {
 
         UserProfileDto cachedProfile = redisService.get(key,UserProfileDto.class);
         if (cachedProfile != null) {
-            System.out.println("cache hit for profile");
+//            System.out.println("cache hit for profile");
             return cachedProfile;
         }
-        System.out.println("cache miss for profile");
+//        System.out.println("cache miss for profile");
 
         User user = userRepository.findById(new ObjectId(id)).orElse(null);
         UserProfileDto userProfileDto= mapToDto(user);
